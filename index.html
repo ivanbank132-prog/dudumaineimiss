@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050807">
+<meta name="description" content="DUDUMAINEIMISS — незалежна цифрова лабораторія програмування та експериментів.">
+<title>DUDUMAINEIMISS | Digital Lab</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #00ff88;
+  --bg: #050807;
+  --panel: #0b1210;
+  --text: #d8e5dd;
+  --muted: #728078;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Consolas, monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .12;
+  background-image:
+    linear-gradient(#00ff8810 1px, transparent 1px),
+    linear-gradient(90deg, #00ff8810 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 7%;
+  border-bottom: 1px solid #193326;
+}
+
+.logo {
+  font-size: 19px;
+  font-weight: bold;
+  color: var(--green);
+  letter-spacing: 2px;
+}
+
+.status {
+  color: var(--green);
+  font-size: 11px;
+}
+
+main {
+  position: relative;
+  max-width: 1050px;
+  margin: auto;
+  padding: 85px 22px;
+}
+
+.tag {
+  color: var(--green);
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-bottom: 22px;
+}
+
+h1 {
+  font-size: clamp(34px, 8vw, 75px);
+  line-height: 1.05;
+  color: white;
+  letter-spacing: -3px;
+  overflow-wrap: anywhere;
+}
+
+h1 span { color: var(--green); }
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 22px;
+  line-height: 1.8;
+  max-width: 550px;
+  font-size: 14px;
+}
+
+.button {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 14px 22px;
+  background: var(--green);
+  color: #00150b;
+  border: none;
+  font-weight: bold;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.button:hover {
+  box-shadow: 0 0 25px #00ff8866;
+  transform: translateY(-2px);
+}
+
+.section-title {
+  color: var(--green);
+  font-size: 13px;
+  letter-spacing: 3px;
+  margin: 65px 0 20px;
+}
+
+.terminal {
+  background: #080e0b;
+  border: 1px solid #1b4831;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 35px #00ff880b;
+}
+
+.terminal-head {
+  padding: 13px 16px;
+  border-bottom: 1px solid #193326;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.terminal-body {
+  padding: 20px;
+  min-height: 180px;
+  font-size: 13px;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+.green { color: var(--green); }
+.muted { color: var(--muted); }
+
+.input-line {
+  display: flex;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid #193326;
+}
+
+.input-line span { color: var(--green); }
+
+input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  color: white;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  padding: 22px;
+  background: var(--panel);
+  border: 1px solid #1b3327;
+  transition: .25s;
+}
+
+.card:hover {
+  border-color: var(--green);
+  transform: translateY(-4px);
+}
+
+.card-icon {
+  font-size: 25px;
+  margin-bottom: 17px;
+}
+
+.card h3 {
+  color: white;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+footer {
+  position: relative;
+  text-align: center;
+  padding: 30px 15px;
+  border-top: 1px solid #193326;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 2;
+}
+
+footer span { color: var(--green); }
+
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 15px;
+  background: var(--green);
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@media(max-width: 600px) {
+  main { padding-top: 65px; }
+  header { padding: 18px 5%; }
+  .logo { font-size: 15px; }
+  .status { font-size: 9px; }
+  h1 { letter-spacing: -2px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">DUDUMAINEIMISS</div>
+  <div class="status">● SYSTEM ONLINE</div>
+</header>
+
+<main>
+
+  <div class="tag">// INDEPENDENT DIGITAL LABORATORY</div>
+
+  <h1>THINK.<br>CREATE.<br><span>EXPLORE.</span></h1>
+
+  <p class="subtitle">
+    Ласкаво просимо до DUDUMAINEIMISS.
+    Незалежна цифрова лабораторія для програмування,
+    технологічних експериментів та дослідження можливостей коду.
+  </p>
+
+  <a href="#terminal" class="button">ВІДКРИТИ ТЕРМІНАЛ →</a>
+
+  <div class="section-title">// INTERACTIVE TERMINAL</div>
+
+  <div class="terminal" id="terminal">
+    <div class="terminal-head">
+      DUDUMAINEIMISS — bash simulation
+    </div>
+
+    <div class="terminal-body" id="output">
+      <div class="green">Welcome to DUDUMAINEIMISS v1.0</div>
+      <div class="muted">Введи help, щоб побачити доступні команди.</div>
+      <div>System initialized successfully.</div>
+    </div>
+
+    <div class="input-line">
+      <span>visitor@lab:~$</span>
+      <input id="command" placeholder="Введи команду..." autocomplete="off">
+    </div>
+  </div>
+
+  <div class="section-title">// EXPERIMENTS</div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-icon">⌨️</div>
+      <h3>CODE LAB</h3>
+      <p>Експерименти з HTML, CSS, JavaScript та Python.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🧠</div>
+      <h3>AI RESEARCH</h3>
+      <p>Дослідження штучного інтелекту та нейромереж.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <h3>WEB PROJECTS</h3>
+      <p>Створення вебсайтів, інструментів та цифрових рішень.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🔬</div>
+      <h3>EXPERIMENTS</h3>
+      <p>Тестування нових ідей, технологій та програмного коду.</p>
+    </div>
+
+  </div>
+
+  <div class="section-title">// ABOUT THE PROJECT</div>
+
+  <p class="subtitle">
+    DUDUMAINEIMISS — простір для цікавості,
+    навчання та сміливих технологічних ідей.
+    Тут починаються експерименти.
+  </p>
+
+</main>
+
+<footer>
+  <span>DUDUMAINEIMISS</span> © 2026<br>
+  INDEPENDENT DIGITAL LABORATORY<br>
+  BUILT WITH CURIOSITY.
+</footer>
+
+<script>
+const input = document.getElementById("command");
+const output = document.getElementById("output");
+
+const commands = {
+  help: `
+    <span class="green">ДОСТУПНІ КОМАНДИ:</span><br>
+    help — список команд<br>
+    about — про лабораторію<br>
+    status — стан системи<br>
+    projects — наші напрямки<br>
+    date — поточна дата<br>
+    clear — очистити термінал<br>
+    whoami — хто ти?
+  `,
+  about: "DUDUMAINEIMISS — незалежна цифрова лабораторія.",
+  status: '<span class="green">ONLINE</span> — система працює.',
+  projects: "CODE LAB | AI RESEARCH | WEB PROJECTS | EXPERIMENTS",
+  whoami: "Ти відвідувач DUDUMAINEIMISS.",
+  date: new Date().toLocaleString("uk-UA")
+};
+
+input.addEventListener("keydown", function(event) {
+  if (event.key !== "Enter") return;
+
+  const cmd = input.value.trim().toLowerCase();
+
+  if (!cmd) return;
+
+  if (cmd === "clear") {
+    output.innerHTML = "";
+    input.value = "";
+    return;
+  }
+
+  const line = document.createElement("div");
+  line.innerHTML = '<span class="green">visitor@lab:~$</span> ';
+  line.appendChild(document.createTextNode(cmd));
+  output.appendChild(line);
+
+  const result = document.createElement("div");
+  result.style.marginBottom = "12px";
+
+  if (Object.prototype.hasOwnProperty.call(commands, cmd)) {
+    result.innerHTML = commands[cmd];
+  } else {
+    result.textContent = "Команду не знайдено. Введи help.";
+  }
+
+  output.appendChild(result);
+  input.value = "";
+  output.scrollTop = output.scrollHeight;
+});
+</script>
+
+</body>
+  </html>
+  
