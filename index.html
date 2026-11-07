@@ -70,12 +70,11 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
 </head>
 
 <body>
-
 <header>
  <div class="logo">DUDUMAINEIMISS</div>
  <div class="topright">
   <div class="online" id="onlineText">● SYSTEM ONLINE</div>
-  <select id="language">
+  <select id="language" aria-label="Language">
    <option value="en">ENGLISH ▼</option>
    <option value="uk">УКРАЇНСЬКА ▼</option>
    <option value="ru">РУССКИЙ ▼</option>
@@ -92,22 +91,22 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
   <h2 id="authTitle">// CREATE ACCOUNT</h2>
 
   <div id="usernameWrap">
-   <label id="usernameLabel">Username</label>
-   <input id="username" maxlength="24" placeholder="Your username">
+   <label id="usernameLabel" for="username">Username</label>
+   <input id="username" maxlength="24" placeholder="Your username" autocomplete="username">
   </div>
 
-  <label id="emailLabel">Email</label>
-  <input id="email" type="email" placeholder="you@example.com">
+  <label id="emailLabel" for="email">Email</label>
+  <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
 
-  <label id="passwordLabel">Password</label>
-  <input id="password" type="password" placeholder="Minimum 8 characters">
+  <label id="passwordLabel" for="password">Password</label>
+  <input id="password" type="password" placeholder="Minimum 8 characters" autocomplete="current-password">
 
   <div class="actions">
-   <button id="signup">REGISTER</button>
-   <button class="secondary" id="login">LOGIN</button>
+   <button id="signup" type="button">REGISTER</button>
+   <button class="secondary" id="login" type="button">LOGIN</button>
   </div>
 
-  <div id="status" role="status"></div>
+  <div id="status" role="status" aria-live="polite"></div>
   <p class="note" id="authHint">Use a real email address. Check your inbox to confirm registration.</p>
  </section>
 
@@ -117,22 +116,22 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
     <h2 id="chatTitle" style="margin:0">/// GLOBAL CHAT</h2>
     <div class="note" id="welcome"></div>
    </div>
-   <button class="secondary" id="logout">LOG OUT</button>
+   <button class="secondary" id="logout" type="button">LOG OUT</button>
   </div>
 
-  <div id="messages"></div>
+  <div id="messages" aria-live="polite"></div>
 
   <div id="attachmentPreview">
    <div id="previewInfo"></div>
-   <button id="removeFile">×</button>
+   <button id="removeFile" type="button">×</button>
   </div>
 
   <div class="sendrow">
-   <button class="secondary attachBtn" id="attachButton">＋</button>
-   <input id="message" maxlength="1000" placeholder="Write a message...">
-   <button class="secondary attachBtn" id="paperclipButton">📎</button>
+   <button class="secondary attachBtn" id="attachButton" type="button">＋</button>
+   <input id="message" maxlength="1000" placeholder="Write a message..." autocomplete="off">
+   <button class="secondary attachBtn" id="paperclipButton" type="button">📎</button>
    <input id="fileInput" type="file" accept="image/*,video/*,.pdf,.txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip">
-   <button id="send">SEND</button>
+   <button id="send" type="button">SEND</button>
   </div>
 
   <p class="uploadHint" id="uploadHint">Attach images, videos or documents. Maximum file size: 25 MB.</p>
@@ -143,159 +142,150 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
 <footer id="footer">DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY</footer>
 
 <script>
-const SUPABASE_URL="https://kmlgjkerxillpprwnyag.supabase.co";
-const SUPABASE_KEY="sb_publishable_El5VPqfIPJbEHNiamElL8g_ypdFD1hm";
-const STORAGE_BUCKET="chat-files";
-const MAX_FILE_SIZE=25*1024*1024;
+"use strict";
 
-const $=id=>document.getElementById(id);
+const SUPABASE_URL = "https://kmlgjkerxillpprwnyag.supabase.co";
+const SUPABASE_KEY = "sb_publishable_El5VPqfIPJbEHNiamElL8g_ypdFD1hm";
+const STORAGE_BUCKET = "chat-files";
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
-const translations={
-en:{
-online:"● SYSTEM ONLINE",
-tagline:"// INDEPENDENT DIGITAL COMMUNITY",
-title:"GLOBAL CHAT.",
-description:"One community. One chat. People from all over the world.",
-auth:"// CREATE ACCOUNT",username:"Username",email:"Email",password:"Password",
-signup:"REGISTER",login:"LOGIN",
-hint:"Use a real email address. Check your inbox to confirm registration.",
-chat:"/// GLOBAL CHAT",logout:"LOG OUT",send:"SEND",
-message:"Write a message...",footer:"DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY",
-welcome:"Logged in as",created:"Account created!",
-checkEmail:"Check your email and confirm registration. Then log in.",
-sending:"Creating account...",
-invalidNick:"Username: 3–24 characters, letters, numbers and _ only.",
-invalidPassword:"Enter an email and a password of at least 8 characters.",
-empty:"Enter your email and password.",
-loggedOut:"You have logged out.",
-greeting:"Be respectful. Do not share passwords or personal information.",
-logging:"Logging in...",loadError:"Could not load messages: ",
-loading:"Loading messages...",noMessages:"No messages yet. Start the conversation!",
-fileTooBig:"File is larger than 25 MB.",upload:"Uploading file...",
-uploadError:"File upload failed: ",sendFileError:"Could not save attachment message: ",
-preview:"Preview file",download:"Download",file:"File",attached:"Attachment",
-uploadHint:"Attach images, videos or documents. Maximum file size: 25 MB.",
-selectFirst:"Choose a file first or write a message.",open:"Open file",
-supabaseError:"Connection error. Please reload the page."
-},
-uk:{
-online:"● СИСТЕМА ОНЛАЙН",
-tagline:"// НЕЗАЛЕЖНА ЦИФРОВА СПІЛЬНОТА",
-title:"ГЛОБАЛЬНИЙ ЧАТ.",
-description:"Одна спільнота. Один чат. Люди з усього світу.",
-auth:"// СТВОРИТИ АКАУНТ",username:"Нікнейм",email:"Електронна пошта",
-password:"Пароль",signup:"ЗАРЕЄСТРУВАТИСЯ",login:"УВІЙТИ",
-hint:"Використовуй справжню пошту. Перевір скриньку для підтвердження.",
-chat:"/// ГЛОБАЛЬНИЙ ЧАТ",logout:"ВИЙТИ",send:"НАДІСЛАТИ",
-message:"Напиши повідомлення...",footer:"DUDUMAINEIMISS © 2026 — НЕЗАЛЕЖНА ЦИФРОВА ЛАБОРАТОРІЯ",
-welcome:"Ви увійшли як",created:"Акаунт створено!",
-checkEmail:"Перевір пошту та підтвердь реєстрацію. Потім увійди.",
-sending:"Створюємо акаунт...",
-invalidNick:"Нік: 3–24 символи, тільки латиниця, цифри та _",
-invalidPassword:"Введи email і пароль від 8 символів.",
-empty:"Введи email і пароль.",loggedOut:"Ти вийшов з акаунта.",
-greeting:"Будь ввічливим. Не публікуй паролі та особисті дані.",
-logging:"Входимо...",loadError:"Не вдалося завантажити повідомлення: ",
-loading:"Завантаження повідомлень...",noMessages:"Повідомлень поки немає. Почни розмову!",
-fileTooBig:"Файл більший за 25 МБ.",upload:"Завантаження файлу...",
-uploadError:"Не вдалося завантажити файл: ",
-sendFileError:"Не вдалося зберегти повідомлення з файлом: ",
-preview:"Переглянути файл",download:"Завантажити",file:"Файл",attached:"Вкладення",
-uploadHint:"Додавай фото, відео або документи. Максимальний розмір: 25 МБ.",
-selectFirst:"Вибери файл або напиши повідомлення.",open:"Відкрити файл",
-supabaseError:"Помилка з'єднання. Перезавантаж сторінку."
-},
-ru:{
-online:"● СИСТЕМА ОНЛАЙН",
-tagline:"// НЕЗАВИСИМОЕ ЦИФРОВОЕ СООБЩЕСТВО",
-title:"ГЛОБАЛЬНЫЙ ЧАТ.",
-description:"Одно сообщество. Один чат. Люди со всего мира.",
-auth:"// СОЗДАТЬ АККАУНТ",username:"Никнейм",email:"Электронная почта",
-password:"Пароль",signup:"ЗАРЕГИСТРИРОВАТЬСЯ",login:"ВОЙТИ",
-hint:"Используй настоящий email. Проверь почту для подтверждения регистрации.",
-chat:"/// ГЛОБАЛЬНЫЙ ЧАТ",logout:"ВЫЙТИ",send:"ОТПРАВИТЬ",
-message:"Напиши сообщение...",footer:"DUDUMAINEIMISS © 2026 — НЕЗАВИСИМАЯ ЦИФРОВАЯ ЛАБОРАТОРИЯ",
-welcome:"Вы вошли как",created:"Аккаунт создан!",
-checkEmail:"Проверь почту и подтверди регистрацию. Затем войди.",
-sending:"Создаём аккаунт...",
-invalidNick:"Ник: 3–24 символа, только латиница, цифры и _",
-invalidPassword:"Введи email и пароль от 8 символов.",
-empty:"Введи email и пароль.",loggedOut:"Вы вышли из аккаунта.",
-greeting:"Будь вежливым. Не публикуй пароли и личные данные.",
-logging:"Входим...",loadError:"Не удалось загрузить сообщения: ",
-loading:"Загрузка сообщений...",noMessages:"Сообщений пока нет. Начни разговор!",
-fileTooBig:"Файл больше 25 МБ.",upload:"Загрузка файла...",
-uploadError:"Не удалось загрузить файл: ",
-sendFileError:"Не удалось сохранить сообщение с файлом: ",
-preview:"Просмотреть файл",download:"Скачать",file:"Файл",attached:"Вложение",
-uploadHint:"Добавляй фото, видео или документы. Максимальный размер: 25 МБ.",
-selectFirst:"Выбери файл или напиши сообщение.",open:"Открыть файл",
-supabaseError:"Ошибка соединения. Перезагрузи страницу."
-}
+const $ = id => document.getElementById(id);
+
+const translations = {
+ en:{
+  online:"● SYSTEM ONLINE",tagline:"// INDEPENDENT DIGITAL COMMUNITY",
+  title:"GLOBAL CHAT.",description:"One community. One chat. People from all over the world.",
+  auth:"// CREATE ACCOUNT",username:"Username",email:"Email",password:"Password",
+  signup:"REGISTER",login:"LOGIN",
+  hint:"Use a real email address. Check your inbox to confirm registration.",
+  chat:"/// GLOBAL CHAT",logout:"LOG OUT",send:"SEND",
+  message:"Write a message...",footer:"DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY",
+  welcome:"Logged in as",created:"Account created!",
+  checkEmail:"Check your email and confirm registration. Then log in.",
+  sending:"Creating account...",
+  invalidNick:"Username: 3–24 characters, letters, numbers and _ only.",
+  invalidPassword:"Enter an email and a password of at least 8 characters.",
+  empty:"Enter your email and password.",loggedOut:"You have logged out.",
+  greeting:"Be respectful. Do not share passwords or personal information.",
+  logging:"Logging in...",loadError:"Could not load messages: ",
+  loading:"Loading messages...",noMessages:"No messages yet. Start the conversation!",
+  fileTooBig:"File is larger than 25 MB.",upload:"Uploading file...",
+  uploadError:"File upload failed: ",sendFileError:"Could not save attachment message: ",
+  preview:"Preview file",download:"Download",file:"File",attached:"Attachment",
+  uploadHint:"Attach images, videos or documents. Maximum file size: 25 MB.",
+  selectFirst:"Choose a file first or write a message.",open:"Open file",
+  connectionError:"Could not connect to Supabase."
+ },
+ uk:{
+  online:"● СИСТЕМА ОНЛАЙН",tagline:"// НЕЗАЛЕЖНА ЦИФРОВА СПІЛЬНОТА",
+  title:"ГЛОБАЛЬНИЙ ЧАТ.",description:"Одна спільнота. Один чат. Люди з усього світу.",
+  auth:"// СТВОРИТИ АКАУНТ",username:"Нікнейм",email:"Електронна пошта",
+  password:"Пароль",signup:"ЗАРЕЄСТРУВАТИСЯ",login:"УВІЙТИ",
+  hint:"Використовуй справжню пошту. Перевір скриньку для підтвердження.",
+  chat:"/// ГЛОБАЛЬНИЙ ЧАТ",logout:"ВИЙТИ",send:"НАДІСЛАТИ",
+  message:"Напиши повідомлення...",footer:"DUDUMAINEIMISS © 2026 — НЕЗАЛЕЖНА ЦИФРОВА ЛАБОРАТОРІЯ",
+  welcome:"Ви увійшли як",created:"Акаунт створено!",
+  checkEmail:"Перевір пошту та підтвердь реєстрацію. Потім увійди.",
+  sending:"Створюємо акаунт...",
+  invalidNick:"Нік: 3–24 символи, тільки латиниця, цифри та _",
+  invalidPassword:"Введи email і пароль від 8 символів.",
+  empty:"Введи email і пароль.",loggedOut:"Ти вийшов з акаунта.",
+  greeting:"Будь ввічливим. Не публікуй паролі та особисті дані.",
+  logging:"Входимо...",loadError:"Не вдалося завантажити повідомлення: ",
+  loading:"Завантаження повідомлень...",noMessages:"Повідомлень поки немає. Почни розмову!",
+  fileTooBig:"Файл більший за 25 МБ.",upload:"Завантаження файлу...",
+  uploadError:"Не вдалося завантажити файл: ",
+  sendFileError:"Не вдалося зберегти повідомлення з файлом: ",
+  preview:"Переглянути файл",download:"Завантажити",file:"Файл",attached:"Вкладення",
+  uploadHint:"Додавай фото, відео або документи. Максимальний розмір: 25 МБ.",
+  selectFirst:"Вибери файл або напиши повідомлення.",open:"Відкрити файл",
+  connectionError:"Не вдалося підключитися до Supabase."
+ },
+ ru:{
+  online:"● СИСТЕМА ОНЛАЙН",tagline:"// НЕЗАВИСИМОЕ ЦИФРОВОЕ СООБЩЕСТВО",
+  title:"ГЛОБАЛЬНЫЙ ЧАТ.",description:"Одно сообщество. Один чат. Люди со всего мира.",
+  auth:"// СОЗДАТЬ АККАУНТ",username:"Никнейм",email:"Электронная почта",
+  password:"Пароль",signup:"ЗАРЕГИСТРИРОВАТЬСЯ",login:"ВОЙТИ",
+  hint:"Используй настоящий email. Проверь почту для подтверждения регистрации.",
+  chat:"/// ГЛОБАЛЬНЫЙ ЧАТ",logout:"ВЫЙТИ",send:"ОТПРАВИТЬ",
+  message:"Напиши сообщение...",footer:"DUDUMAINEIMISS © 2026 — НЕЗАВИСИМАЯ ЦИФРОВАЯ ЛАБОРАТОРИЯ",
+  welcome:"Вы вошли как",created:"Аккаунт создан!",
+  checkEmail:"Проверь почту и подтверди регистрацию. Затем войди.",
+  sending:"Создаём аккаунт...",
+  invalidNick:"Ник: 3–24 символа, только латиница, цифры и _",
+  invalidPassword:"Введи email и пароль от 8 символов.",
+  empty:"Введи email и пароль.",loggedOut:"Вы вышли из аккаунта.",
+  greeting:"Будь вежливым. Не публикуй пароли и личные данные.",
+  logging:"Входим...",loadError:"Не удалось загрузить сообщения: ",
+  loading:"Загрузка сообщений...",noMessages:"Сообщений пока нет. Начни разговор!",
+  fileTooBig:"Файл больше 25 МБ.",upload:"Загрузка файла...",
+  uploadError:"Не удалось загрузить файл: ",
+  sendFileError:"Не удалось сохранить сообщение с файлом: ",
+  preview:"Просмотреть файл",download:"Скачать",file:"Файл",attached:"Вложение",
+  uploadHint:"Добавляй фото, видео или документы. Максимальный размер: 25 МБ.",
+  selectFirst:"Выбери файл или напиши сообщение.",open:"Открыть файл",
+  connectionError:"Не удалось подключиться к Supabase."
+ }
 };
 
-let currentLanguage=localStorage.getItem("dudu_language")||"en";
-if(!translations[currentLanguage])currentLanguage="en";
-
-let db=null;
-let currentUser=null;
-let chatChannel=null;
-let selectedFile=null;
-let loadingChat=false;
+let currentLanguage = "en";
+let db = null;
+let currentUser = null;
+let chatChannel = null;
+let selectedFile = null;
+let loadingChat = false;
+let authMode = "signup";
 
 function tr(key){
- return translations[currentLanguage][key]||key;
+ return translations[currentLanguage][key] || translations.en[key] || key;
 }
 
 function status(message,error=false){
- $("status").textContent=message;
- $("status").style.color=error?"#ff7777":"#00ff88";
+ $("status").textContent = message;
+ $("status").style.color = error ? "#ff7777" : "#00ff88";
 }
 
 function setLanguage(lang){
- if(!translations[lang])return;
+ if(!translations[lang]) return;
 
- currentLanguage=lang;
- localStorage.setItem("dudu_language",lang);
+ currentLanguage = lang;
+ try{localStorage.setItem("dudu_language",lang)}catch(e){}
 
- const t=translations[lang];
- document.documentElement.lang=lang;
- $("language").value=lang;
+ document.documentElement.lang = lang;
+ $("language").value = lang;
 
- $("onlineText").textContent=t.online;
- $("tagline").textContent=t.tagline;
+ const t = translations[lang];
+ $("onlineText").textContent = t.online;
+ $("tagline").textContent = t.tagline;
 
- const title=t.title;
- const parts=title.split(" ");
+ const words = t.title.split(" ");
  $("mainTitle").replaceChildren();
+ $("mainTitle").append(document.createTextNode(words[0] + " "));
+ const accent = document.createElement("span");
+ accent.textContent = words.slice(1).join(" ");
+ $("mainTitle").append(accent);
 
- const first=document.createTextNode(parts[0]+" ");
- const second=document.createElement("span");
- second.textContent=parts.slice(1).join(" ");
-
- $("mainTitle").append(first,second);
-
- $("description").textContent=t.description;
- $("authTitle").textContent=t.auth;
- $("usernameLabel").textContent=t.username;
- $("emailLabel").textContent=t.email;
- $("passwordLabel").textContent=t.password;
- $("username").placeholder=t.username;
- $("email").placeholder=t.email;
- $("password").placeholder=t.password;
- $("signup").textContent=t.signup;
- $("login").textContent=t.login;
- $("authHint").textContent=t.hint;
- $("chatTitle").textContent=t.chat;
- $("logout").textContent=t.logout;
- $("send").textContent=t.send;
- $("message").placeholder=t.message;
- $("chatHint").textContent=t.greeting;
- $("footer").textContent=t.footer;
- $("uploadHint").textContent=t.uploadHint;
+ $("description").textContent = t.description;
+ $("authTitle").textContent = authMode === "signup" ? t.auth : t.login;
+ $("usernameLabel").textContent = t.username;
+ $("emailLabel").textContent = t.email;
+ $("passwordLabel").textContent = t.password;
+ $("username").placeholder = t.username;
+ $("email").placeholder = t.email;
+ $("password").placeholder = t.password;
+ $("signup").textContent = t.signup;
+ $("login").textContent = t.login;
+ $("authHint").textContent = t.hint;
+ $("chatTitle").textContent = t.chat;
+ $("logout").textContent = t.logout;
+ $("send").textContent = t.send;
+ $("message").placeholder = t.message;
+ $("chatHint").textContent = t.greeting;
+ $("footer").textContent = t.footer;
+ $("uploadHint").textContent = t.uploadHint;
 
  if(currentUser){
-  $("welcome").textContent=t.welcome+" @"+($("welcome").dataset.nick||"user");
+  $("welcome").textContent = t.welcome + " @" + ($("welcome").dataset.nick || "user");
  }
 }
 
@@ -304,151 +294,178 @@ $("language").addEventListener("change",e=>{
 });
 
 function showAuth(){
- $("authPanel").style.display="block";
- $("chatPanel").style.display="none";
- $("usernameWrap").style.display="block";
- $("authTitle").textContent=tr("auth");
+ $("authPanel").style.display = "block";
+ $("chatPanel").style.display = "none";
+ $("usernameWrap").style.display = authMode === "signup" ? "block" : "none";
 }
 
 function showChat(){
- $("authPanel").style.display="none";
- $("chatPanel").style.display="block";
+ $("authPanel").style.display = "none";
+ $("chatPanel").style.display = "block";
 }
 
 function switchToLogin(){
- $("usernameWrap").style.display="none";
- $("authTitle").textContent=tr("login");
+ authMode = "login";
+ $("usernameWrap").style.display = "none";
+ $("authTitle").textContent = tr("login");
  status("");
 }
 
 $("login").addEventListener("click",switchToLogin);
 
-async function loadSupabase(){
- if(window.supabase)return window.supabase;
+function switchToSignup(){
+ authMode = "signup";
+ $("usernameWrap").style.display = "block";
+ $("authTitle").textContent = tr("auth");
+ status("");
+}
 
- const urls=[
+/* Double-click LOGIN label area is not needed:
+   after a successful signup the user can reload to return to registration. */
+
+async function loadSupabase(){
+ if(window.supabase && window.supabase.createClient){
+  return window.supabase;
+ }
+
+ const sources = [
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
   "https://unpkg.com/@supabase/supabase-js@2"
  ];
 
- for(const url of urls){
+ for(const src of sources){
   try{
    await new Promise((resolve,reject)=>{
-    const script=document.createElement("script");
-    script.src=url;
-    script.onload=resolve;
-    script.onerror=reject;
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
     document.head.appendChild(script);
    });
-   if(window.supabase)return window.supabase;
+
+   if(window.supabase && window.supabase.createClient){
+    return window.supabase;
+   }
   }catch(e){}
  }
 
- throw new Error("Supabase library could not be loaded.");
+ throw new Error("Supabase JavaScript library could not be loaded.");
 }
 
 async function register(){
  if(!db){
-  status(tr("supabaseError"),true);
+  status(tr("connectionError"),true);
   return;
  }
 
- const username=$("username").value.trim();
- const email=$("email").value.trim();
- const password=$("password").value;
+ const username = $("username").value.trim();
+ const email = $("email").value.trim();
+ const password = $("password").value;
 
  if(!/^[a-zA-Z0-9_]{3,24}$/.test(username)){
   status(tr("invalidNick"),true);
   return;
  }
 
- if(!email||password.length<8){
+ if(!email || password.length < 8){
   status(tr("invalidPassword"),true);
   return;
  }
 
- $("signup").disabled=true;
+ $("signup").disabled = true;
  status(tr("sending"));
 
  try{
-  const {data,error}=await db.auth.signUp({
+  const {data,error} = await db.auth.signUp({
    email,
    password,
    options:{
-    data:{username},
+    data:{username:username},
     emailRedirectTo:"https://dudumaineimiss.pages.dev"
    }
   });
 
-  if(error)throw error;
+  if(error) throw error;
 
   if(data.session){
    status(tr("created"));
   }else{
    status(tr("checkEmail"));
-   $("usernameWrap").style.display="none";
-   $("authTitle").textContent=tr("login");
+   authMode = "login";
+   $("usernameWrap").style.display = "none";
+   $("authTitle").textContent = tr("login");
   }
+
  }catch(error){
-  status(error.message||tr("supabaseError"),true);
+  status(error.message || tr("connectionError"),true);
  }finally{
-  $("signup").disabled=false;
+  $("signup").disabled = false;
  }
 }
 
 $("signup").addEventListener("click",register);
 
-async function login(){
+async function loginUser(){
  if(!db){
-  status(tr("supabaseError"),true);
+  status(tr("connectionError"),true);
   return;
  }
 
- const email=$("email").value.trim();
- const password=$("password").value;
+ const email = $("email").value.trim();
+ const password = $("password").value;
 
- if(!email||!password){
+ if(!email || !password){
   status(tr("empty"),true);
   return;
  }
 
- $("login").disabled=true;
+ $("login").disabled = true;
  status(tr("logging"));
 
  try{
-  const {error}=await db.auth.signInWithPassword({email,password});
-  if(error)throw error;
+  const {error} = await db.auth.signInWithPassword({email,password});
+  if(error) throw error;
  }catch(error){
   status(error.message,true);
  }finally{
-  $("login").disabled=false;
+  $("login").disabled = false;
  }
 }
 
-$("login").addEventListener("click",login);
+/* LOGIN button switches the form to login mode.
+   Press it again after entering credentials to submit. */
+$("login").addEventListener("dblclick",loginUser);
+
+/* Use Enter in password field to submit login. */
+$("password").addEventListener("keydown",e=>{
+ if(e.key === "Enter"){
+  if(authMode === "login") loginUser();
+  else register();
+ }
+});
 
 function formatSize(bytes){
- if(bytes<1024)return bytes+" B";
- if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" KB";
- return (bytes/1024/1024).toFixed(1)+" MB";
+ if(bytes < 1024) return bytes + " B";
+ if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+ return (bytes/1024/1024).toFixed(1) + " MB";
 }
 
 function showSelectedFile(file){
  $("attachmentPreview").classList.add("show");
  $("previewInfo").replaceChildren();
 
- const strong=document.createElement("strong");
- strong.textContent=tr("attached");
+ const strong = document.createElement("strong");
+ strong.textContent = tr("attached");
 
- const name=document.createElement("div");
- name.textContent=file.name+" · "+formatSize(file.size);
+ const name = document.createElement("div");
+ name.textContent = file.name + " · " + formatSize(file.size);
 
  $("previewInfo").append(strong,name);
 }
 
 function clearSelectedFile(){
- selectedFile=null;
- $("fileInput").value="";
+ selectedFile = null;
+ $("fileInput").value = "";
  $("attachmentPreview").classList.remove("show");
  $("previewInfo").replaceChildren();
 }
@@ -462,318 +479,88 @@ $("paperclipButton").addEventListener("click",chooseFile);
 $("removeFile").addEventListener("click",clearSelectedFile);
 
 $("fileInput").addEventListener("change",()=>{
- const file=$("fileInput").files[0];
- if(!file)return;
+ const file = $("fileInput").files[0];
+ if(!file) return;
 
- if(file.size>MAX_FILE_SIZE){
+ if(file.size > MAX_FILE_SIZE){
   alert(tr("fileTooBig"));
   clearSelectedFile();
   return;
  }
 
- selectedFile=file;
+ selectedFile = file;
  showSelectedFile(file);
 });
 
 async function getSignedFileUrl(path){
- const {data,error}=await db.storage.from(STORAGE_BUCKET).createSignedUrl(path,3600);
- if(error)throw error;
+ const {data,error} = await db.storage.from(STORAGE_BUCKET).createSignedUrl(path,3600);
+ if(error) throw error;
  return data.signedUrl;
 }
 
 function addAttachment(container,row){
- if(!row.file_path)return;
+ if(!row.file_path) return;
 
- const card=document.createElement("div");
- card.className="fileCard";
+ const card = document.createElement("div");
+ card.className = "fileCard";
 
- const title=document.createElement("div");
- title.className="nick";
- title.textContent=row.file_name||tr("file");
+ const title = document.createElement("div");
+ title.className = "nick";
+ title.textContent = row.file_name || tr("file");
 
- const meta=document.createElement("div");
- meta.className="fileMeta";
- meta.textContent=(row.file_type||"file")+" · "+formatSize(row.file_size||0);
+ const meta = document.createElement("div");
+ meta.className = "fileMeta";
+ meta.textContent = (row.file_type || "file") + " · " + formatSize(row.file_size || 0);
 
- const actions=document.createElement("div");
- actions.className="fileActions";
+ const actions = document.createElement("div");
+ actions.className = "fileActions";
 
- const previewBtn=document.createElement("button");
- previewBtn.className="secondary";
- previewBtn.textContent=tr("preview");
+ const previewBtn = document.createElement("button");
+ previewBtn.className = "secondary";
+ previewBtn.textContent = tr("preview");
 
- const downloadBtn=document.createElement("button");
- downloadBtn.className="secondary";
- downloadBtn.textContent=tr("download");
+ const downloadBtn = document.createElement("button");
+ downloadBtn.className = "secondary";
+ downloadBtn.textContent = tr("download");
 
  card.append(title,meta);
 
- const type=(row.file_type||"").toLowerCase();
- let media=null;
+ const type = (row.file_type || "").toLowerCase();
+ let media = null;
 
  if(type.startsWith("image/")){
-  media=document.createElement("img");
-  media.className="filePreview";
-  media.alt=row.file_name||"Image";
+  media = document.createElement("img");
+  media.className = "filePreview";
+  media.alt = row.file_name || "Image";
  }
 
  if(type.startsWith("video/")){
-  media=document.createElement("video");
-  media.className="filePreview";
-  media.controls=true;
+  media = document.createElement("video");
+  media.className = "filePreview";
+  media.controls = true;
+  media.preload = "metadata";
  }
 
- if(type==="application/pdf"){
-  media=document.createElement("iframe");
-  media.className="filePreview";
-  media.style.width="100%";
-  media.style.height="300px";
+ if(type === "application/pdf"){
+  media = document.createElement("iframe");
+  media.className = "filePreview";
+  media.style.width = "100%";
+  media.style.height = "300px";
  }
 
- if(media)card.append(media);
+ if(media) card.append(media);
 
  actions.append(previewBtn,downloadBtn);
  card.append(actions);
  container.append(card);
 
- let url=null;
+ let url = null;
 
  async function resolveUrl(){
-  if(!url)url=await getSignedFileUrl(row.file_path);
+  if(!url) url = await getSignedFileUrl(row.file_path);
   return url;
  }
 
  previewBtn.addEventListener("click",async()=>{
   try{
-   const signed=await resolveUrl();
-   if(media){
-    media.src=signed;
-    previewBtn.textContent=tr("open");
-   }else{
-    window.open(signed,"_blank","noopener");
-   }
-  }catch(e){
-   alert(tr("loadError")+e.message);
-  }
- });
-
- downloadBtn.addEventListener("click",async()=>{
-  try{
-   const signed=await resolveUrl();
-   const a=document.createElement("a");
-   a.href=signed;
-   a.target="_blank";
-   a.rel="noopener";
-   a.download=row.file_name||"download";
-   a.click();
-  }catch(e){
-   alert(tr("loadError")+e.message);
-  }
- });
-}
-
-function addMessage(row){
- const item=document.createElement("div");
- item.className="msg";
-
- const header=document.createElement("div");
- const nick=document.createElement("span");
- nick.className="nick";
- nick.textContent=row.profiles?.username||"User";
-
- const time=document.createElement("span");
- time.className="time";
- time.textContent=new Date(row.created_at).toLocaleString();
-
- const content=document.createElement("div");
- content.className="content";
- content.textContent=row.content||"";
-
- header.append(nick,time);
- item.append(header);
-
- if(row.content)item.append(content);
-
- addAttachment(item,row);
- $("messages").appendChild(item);
-}
-
-async function loadMessages(){
- const box=$("messages");
- box.textContent=tr("loading");
-
- const {data,error}=await db.from("messages")
-  .select("id,content,created_at,user_id,file_path,file_name,file_type,file_size,profiles(username)")
-  .order("created_at",{ascending:false})
-  .limit(100);
-
- ){
-  box.textContent=tr("loadError")+error.message;
-  return;
- }
-
- box.replaceChildren();
-
- if(!data.length){
-  box.textContent=tr("noMessages");
-  return;
- }
-
- data.reverse().forEach(addMessage);
- box.scrollTop=box.scrollHeight;
-}
-
-async function sendMessage(){
- const content=$("message").value.trim();
- const file=selectedFile;
-
- if(!content&&!file){
-  alert(tr("selectFirst"));
-  return;
- }
-
- if(!currentUser)return;
-
- $("send").disabled=true;
- $("paperclipButton").disabled=true;
- $("attachButton").disabled=true;
-
- let filePath=null;
-
- try{
-  let fileName=null;
-  let fileType=null;
-  let fileSize=null;
-
-  if(file){
-   status(tr("upload"));
-
-   const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-100);
-   filePath=currentUser.id+"/"+crypto.randomUUID()+"-"+safeName;
-
-   const {error:uploadError}=await db.storage.from(STORAGE_BUCKET)
-    .upload(filePath,file,{
-     contentType:file.type||"application/octet-stream",
-     upsert:false
-    });
-
-   if(uploadError)throw new Error(tr("uploadError")+uploadError.message);
-
-   fileName=file.name;
-   fileType=file.type||"application/octet-stream";
-   fileSize=file.size;
-  }
-
-  const {error}=await db.from("messages").insert({
-   user_id:currentUser.id,
-   content:content||"",
-   file_path:filePath,
-   file_name:fileName,
-   file_type:fileType,
-   file_size:fileSize
-  });
-
-  if(error){
-   if(filePath)await db.storage.from(STORAGE_BUCKET).remove([filePath]);
-   throw new Error(tr("sendFileError")+error.message);
-  }
-
-  $("message").value="";
-  clearSelectedFile();
-  status("");
-  await loadMessages();
-
- }catch(error){
-  alert(error.message);
- }finally{
-  $("send").disabled=false;
-  $("paperclipButton").disabled=false;
-  $("attachButton").disabled=false;
- }
-}
-
-async function enterChat(user){
- if(loadingChat)return;
- loadingChat=true;
- currentUser=user;
-
- try{
-  const {data:profile}=await db.from("profiles")
-   .select("username").eq("id",user.id).single();
-
-  const nick=profile?.username||user.user_metadata?.username||"user";
-  $("welcome").dataset.nick=nick;
-  $("welcome").textContent=tr("welcome")+" @"+nick;
-
-  showChat();
-  await loadMessages();
-
-  if(chatChannel)await db.removeChannel(chatChannel);
-
-  chatChannel=db.channel("global-chat")
-   .on("postgres_changes",{
-    event:"INSERT",schema:"public",table:"messages"
-   },()=>loadMessages())
-   .subscribe();
-
- }catch(error){
-  $("messages").textContent=error.message;
- }finally{
-  loadingChat=false;
- }
-}
-
-$("send").addEventListener("click",sendMessage);
-
-$("message").addEventListener("keydown",e=>{
- if(e.key==="Enter"&&!e.shiftKey){
-  e.preventDefault();
-  sendMessage();
- }
-});
-
-$("logout").addEventListener("click",async()=>{
- if(!db)return;
-
- if(chatChannel)await db.removeChannel(chatChannel);
- chatChannel=null;
-
- await db.auth.signOut();
- currentUser=null;
- loadingChat=false;
- clearSelectedFile();
- showAuth();
- status(tr("loggedOut"));
-});
-
-setLanguage(currentLanguage);
-showAuth();
-
-(async()=>{
- try{
-  const supabaseLibrary=await loadSupabase();
-  db=supabaseLibrary.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-  db.auth.onAuthStateChange((event,session)=>{
-   if(session?.user){
-    setTimeout(()=>enterChat(session.user),0);
-   }else{
-    currentUser=null;
-    showAuth();
-   }
-  });
-
-  const {data:{session},error}=await db.auth.getSession();
-  if(error)throw error;
-
-  if(session?.user)await enterChat(session.user);
-
- }catch(error){
-  status(tr("supabaseError")+" "+error.message,true);
- }
-})();
-</script>
-
-</body>
-</html>
- 
+   const signed = await resolveUrl
