@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +26,7 @@ label{display:block;margin-top:12px;color:#a6b8aa}
 input{width:100%;padding:15px;margin:7px 0 14px;background:#050907;border:1px solid #28513a;border-radius:6px;color:white;font-size:15px;outline:none}
 input:focus{border-color:#00ff88}
 button{padding:13px 17px;background:#00ff88;color:#00180b;border:0;border-radius:5px;font-family:inherit;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
+button:disabled{opacity:.5;cursor:not-allowed}
 .secondary{background:transparent;color:#00ff88;border:1px solid #00ff88}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .note{font-size:12px;color:#829087;line-height:1.8;margin-top:15px}
@@ -39,9 +38,22 @@ button:disabled{opacity:.5}
 .nick{color:#00ff88;font-weight:bold}
 .time{font-size:10px;color:#617268;margin-left:8px}
 .content{white-space:pre-wrap;line-height:1.6;margin-top:5px}
-.sendrow{display:flex;gap:8px}
-.sendrow input{margin:0;min-width:0}
+.sendrow{display:flex;gap:8px;align-items:center}
+.sendrow input{margin:0;min-width:0;flex:1}
 .sendrow button{white-space:nowrap}
+.attachBtn{width:46px;height:46px;padding:0;flex:0 0 46px;font-size:24px;display:grid;place-items:center}
+#fileInput{display:none}
+#attachmentPreview{display:none;margin:12px 0;padding:10px;border:1px solid #28513a;border-radius:7px;background:#07140d;align-items:center;gap:10px}
+#attachmentPreview.show{display:flex}
+#previewInfo{min-width:0;flex:1;font-size:12px;color:#b6c8bb;overflow-wrap:anywhere}
+#previewInfo strong{display:block;color:#00ff88;font-size:13px}
+#removeFile{padding:7px 10px;background:transparent;color:#ff8b8b;border:1px solid #784040}
+.fileCard{margin-top:9px;padding:10px;border:1px solid #28513a;border-radius:7px;background:#07140d;max-width:100%}
+.fileMeta{font-size:11px;color:#829087;margin:4px 0 8px;overflow-wrap:anywhere}
+.filePreview{display:block;max-width:100%;max-height:320px;border-radius:5px;margin:8px 0;object-fit:contain;background:#020403}
+.fileActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.fileActions button{padding:8px 11px;font-size:11px}
+.uploadHint{font-size:11px;color:#829087;margin:8px 0 0;line-height:1.6}
 footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
 @media(max-width:480px){
  main{margin-top:25px}
@@ -49,19 +61,21 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
  .logo{font-size:15px}
  .online{display:none}
  #messages{height:48vh}
- .sendrow{flex-direction:column}
- .sendrow button{width:100%}
+ .sendrow{gap:6px}
+ .sendrow input{width:100%;font-size:13px}
+ .sendrow button#send{padding:12px 10px}
+ .attachBtn{width:42px;height:44px;flex-basis:42px}
+ .filePreview{max-height:240px}
 }
 </style>
 </head>
 
 <body>
-
 <header>
  <div class="logo">DUDUMAINEIMISS</div>
  <div class="topright">
   <div class="online" id="onlineText">● SYSTEM ONLINE</div>
-  <select id="language" aria-label="Language">
+  <select id="language">
    <option value="en">ENGLISH ▼</option>
    <option value="uk">УКРАЇНСЬКА ▼</option>
    <option value="ru">РУССКИЙ ▼</option>
@@ -78,22 +92,22 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
   <h2 id="authTitle">// CREATE ACCOUNT</h2>
 
   <div id="usernameWrap">
-   <label id="usernameLabel" for="username">Username</label>
-   <input id="username" maxlength="24" placeholder="Your username" autocomplete="username">
+   <label id="usernameLabel">Username</label>
+   <input id="username" maxlength="24" placeholder="Your username">
   </div>
 
-  <label id="emailLabel" for="email">Email</label>
-  <input id="email" type="email" placeholder="you@example.com" autocomplete="email">
+  <label id="emailLabel">Email</label>
+  <input id="email" type="email" placeholder="you@example.com">
 
-  <label id="passwordLabel" for="password">Password</label>
-  <input id="password" type="password" placeholder="Minimum 8 characters" autocomplete="current-password">
+  <label id="passwordLabel">Password</label>
+  <input id="password" type="password" placeholder="Minimum 8 characters">
 
   <div class="actions">
    <button id="signup">REGISTER</button>
    <button class="secondary" id="login">LOGIN</button>
   </div>
 
-  <div id="status" role="status" aria-live="polite"></div>
+  <div id="status"></div>
   <p class="note" id="authHint">Use a real email address. Check your inbox to confirm registration.</p>
  </section>
 
@@ -106,389 +120,570 @@ footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
    <button class="secondary" id="logout">LOG OUT</button>
   </div>
 
-  <div id="messages" aria-live="polite"></div>
+  <div id="messages"></div>
+
+  <div id="attachmentPreview">
+   <div id="previewInfo"></div>
+   <button id="removeFile">×</button>
+  </div>
 
   <div class="sendrow">
-   <input id="message" maxlength="1000" placeholder="Write a message..." autocomplete="off">
+   <button class="secondary attachBtn" id="attachButton">＋</button>
+
+   <input id="message" maxlength="1000" placeholder="Write a message...">
+
+   <button class="secondary attachBtn" id="paperclipButton">📎</button>
+
+   <input id="fileInput" type="file"
+   accept="image/*,video/*,.pdf,.txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip">
+
    <button id="send">SEND</button>
   </div>
 
-  <p class="note" id="chatHint">Be respectful. Do not share passwords or personal information.</p>
+  <p class="uploadHint" id="uploadHint">
+   Attach images, videos or documents. Maximum file size: 25 MB.
+  </p>
+
+  <p class="note" id="chatHint">
+   Be respectful. Do not share passwords or personal information.
+  </p>
  </section>
 </main>
 
-<footer id="footer">DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY</footer>
+<footer id="footer">
+DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY
+</footer>
 
 <script>
 const SUPABASE_URL = "https://kmlgjkerxillpprwnyag.supabase.co";
 const SUPABASE_KEY = "sb_publishable_El5VPqfIPJbEHNiamElL8g_ypdFD1hm";
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const STORAGE_BUCKET = "chat-files";
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
 
 const $ = id => document.getElementById(id);
 
 const translations = {
- en:{
-  online:"● SYSTEM ONLINE",
-  tagline:"// INDEPENDENT DIGITAL COMMUNITY",
-  title:"GLOBAL CHAT.",
-  description:"One community. One chat. People from all over the world.",
-  auth:"// CREATE ACCOUNT",
-  username:"Username",
-  email:"Email",
-  password:"Password",
-  signup:"REGISTER",
-  login:"LOGIN",
-  hint:"Use a real email address. Check your inbox to confirm registration.",
-  chat:"/// GLOBAL CHAT",
-  logout:"LOG OUT",
-  send:"SEND",
-  message:"Write a message...",
-  footer:"DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY",
-  welcome:"Logged in as",
-  created:"Account created!",
-  checkEmail:"Check your email and confirm registration. Then log in.",
-  sending:"Creating account...",
-  invalidNick:"Username: 3–24 characters, letters, numbers and _ only.",
-  invalidPassword:"Enter an email and a password of at least 8 characters.",
-  empty:"Enter your email and password.",
-  loggedOut:"You have logged out.",
-  greeting:"Be respectful. Do not share passwords or personal information.",
-  logging:"Logging in...",
-  loadError:"Could not load messages: ",
-  sendError:"Could not send: ",
-  loading:"Loading messages...",
-  noMessages:"No messages yet. Start the conversation!"
- },
- uk:{
-  online:"● СИСТЕМА ОНЛАЙН",
-  tagline:"// НЕЗАЛЕЖНА ЦИФРОВА СПІЛЬНОТА",
-  title:"ГЛОБАЛЬНИЙ ЧАТ.",
-  description:"Одна спільнота. Один чат. Люди з усього світу.",
-  auth:"// СТВОРИТИ АКАУНТ",
-  username:"Нікнейм",
-  email:"Електронна пошта",
-  password:"Пароль",
-  signup:"ЗАРЕЄСТРУВАТИСЯ",
-  login:"УВІЙТИ",
-  hint:"Використовуй справжню пошту. Перевір скриньку для підтвердження.",
-  chat:"/// ГЛОБАЛЬНИЙ ЧАТ",
-  logout:"ВИЙТИ",
-  send:"НАДІСЛАТИ",
-  message:"Напиши повідомлення...",
-  footer:"DUDUMAINEIMISS © 2026 — НЕЗАЛЕЖНА ЦИФРОВА ЛАБОРАТОРІЯ",
-  welcome:"Ви увійшли як",
-  created:"Акаунт створено!",
-  checkEmail:"Перевір пошту та підтвердь реєстрацію. Потім увійди.",
-  sending:"Створюємо акаунт...",
-  invalidNick:"Нік: 3–24 символи, тільки латиниця, цифри та _",
-  invalidPassword:"Введи email і пароль від 8 символів.",
-  empty:"Введи email і пароль.",
-  loggedOut:"Ти вийшов з акаунта.",
-  greeting:"Будь ввічливим. Не публікуй паролі та особисті дані.",
-  logging:"Входимо...",
-  loadError:"Не вдалося завантажити повідомлення: ",
-  sendError:"Не вдалося надіслати: ",
-  loading:"Завантаження повідомлень...",
-  noMessages:"Повідомлень поки немає. Почни розмову!"
- },
- ru:{
-  online:"● СИСТЕМА ОНЛАЙН",
-  tagline:"// НЕЗАВИСИМОЕ ЦИФРОВОЕ СООБЩЕСТВО",
-  title:"ГЛОБАЛЬНЫЙ ЧАТ.",
-  description:"Одно сообщество. Один чат. Люди со всего мира.",
-  auth:"// СОЗДАТЬ АККАУНТ",
-  username:"Никнейм",
-  email:"Электронная почта",
-  password:"Пароль",
-  signup:"ЗАРЕГИСТРИРОВАТЬСЯ",
-  login:"ВОЙТИ",
-  hint:"Используй настоящий email. Проверь почту для подтверждения регистрации.",
-  chat:"/// ГЛОБАЛЬНЫЙ ЧАТ",
-  logout:"ВЫЙТИ",
-  send:"ОТПРАВИТЬ",
-  message:"Напиши сообщение...",
-  footer:"DUDUMAINEIMISS © 2026 — НЕЗАВИСИМАЯ ЦИФРОВАЯ ЛАБОРАТОРИЯ",
-  welcome:"Вы вошли как",
-  created:"Аккаунт создан!",
-  checkEmail:"Проверь почту и подтверди регистрацию. Затем войди.",
-  sending:"Создаём аккаунт...",
-  invalidNick:"Ник: 3–24 символа, только латиница, цифры и _",
-  invalidPassword:"Введи email и пароль от 8 символов.",
-  empty:"Введи email и пароль.",
-  loggedOut:"Вы вышли из аккаунта.",
-  greeting:"Будь вежливым. Не публикуй пароли и личные данные.",
-  logging:"Входим...",
-  loadError:"Не удалось загрузить сообщения: ",
-  sendError:"Не удалось отправить: ",
-  loading:"Загрузка сообщений...",
-  noMessages:"Сообщений пока нет. Начни разговор!"
- }
+en:{
+online:"● SYSTEM ONLINE",
+tagline:"// INDEPENDENT DIGITAL COMMUNITY",
+title:"GLOBAL CHAT.",
+description:"One community. One chat. People from all over the world.",
+auth:"// CREATE ACCOUNT",
+username:"Username",
+email:"Email",
+password:"Password",
+signup:"REGISTER",
+login:"LOGIN",
+hint:"Use a real email address. Check your inbox to confirm registration.",
+chat:"/// GLOBAL CHAT",
+logout:"LOG OUT",
+send:"SEND",
+message:"Write a message...",
+footer:"DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY",
+welcome:"Logged in as",
+created:"Account created!",
+checkEmail:"Check your email and confirm registration. Then log in.",
+sending:"Creating account...",
+invalidNick:"Username: 3–24 characters, letters, numbers and _ only.",
+invalidPassword:"Enter an email and a password of at least 8 characters.",
+empty:"Enter your email and password.",
+loggedOut:"You have logged out.",
+greeting:"Be respectful. Do not share passwords or personal information.",
+logging:"Logging in...",
+loadError:"Could not load messages: ",
+sendError:"Could not send: ",
+loading:"Loading messages...",
+noMessages:"No messages yet. Start the conversation!",
+fileTooBig:"File is larger than 25 MB.",
+upload:"Uploading file...",
+uploadError:"File upload failed: ",
+sendFileError:"Could not save attachment message: ",
+preview:"Preview file",
+download:"Download",
+file:"File",
+attached:"Attachment",
+uploadHint:"Attach images, videos or documents. Maximum file size: 25 MB.",
+selectFirst:"Choose a file first or write a message.",
+open:"Open file"
+},
+
+uk:{
+online:"● СИСТЕМА ОНЛАЙН",
+tagline:"// НЕЗАЛЕЖНА ЦИФРОВА СПІЛЬНОТА",
+title:"ГЛОБАЛЬНИЙ ЧАТ.",
+description:"Одна спільнота. Один чат. Люди з усього світу.",
+auth:"// СТВОРИТИ АКАУНТ",
+username:"Нікнейм",
+email:"Електронна пошта",
+password:"Пароль",
+signup:"ЗАРЕЄСТРУВАТИСЯ",
+login:"УВІЙТИ",
+hint:"Використовуй справжню пошту. Перевір скриньку для підтвердження.",
+chat:"/// ГЛОБАЛЬНИЙ ЧАТ",
+logout:"ВИЙТИ",
+send:"НАДІСЛАТИ",
+message:"Напиши повідомлення...",
+footer:"DUDUMAINEIMISS © 2026 — НЕЗАЛЕЖНА ЦИФРОВА ЛАБОРАТОРІЯ",
+welcome:"Ви увійшли як",
+created:"Акаунт створено!",
+checkEmail:"Перевір пошту та підтвердь реєстрацію. Потім увійди.",
+sending:"Створюємо акаунт...",
+invalidNick:"Нік: 3–24 символи, тільки латиниця, цифри та _",
+invalidPassword:"Введи email і пароль від 8 символів.",
+empty:"Введи email і пароль.",
+loggedOut:"Ти вийшов з акаунта.",
+greeting:"Будь ввічливим. Не публікуй паролі та особисті дані.",
+logging:"Входимо...",
+loadError:"Не вдалося завантажити повідомлення: ",
+sendError:"Не вдалося надіслати: ",
+loading:"Завантаження повідомлень...",
+noMessages:"Повідомлень поки немає. Почни розмову!",
+fileTooBig:"Файл більший за 25 МБ.",
+upload:"Завантаження файлу...",
+uploadError:"Не вдалося завантажити файл: ",
+sendFileError:"Не вдалося зберегти повідомлення з файлом: ",
+preview:"Переглянути файл",
+download:"Завантажити",
+file:"Файл",
+attached:"Вкладення",
+uploadHint:"Додавай фото, відео або документи. Максимальний розмір: 25 МБ.",
+selectFirst:"Вибери файл або напиши повідомлення.",
+open:"Відкрити файл"
+},
+
+ru:{
+online:"● СИСТЕМА ОНЛАЙН",
+tagline:"// НЕЗАВИСИМОЕ ЦИФРОВОЕ СООБЩЕСТВО",
+title:"ГЛОБАЛЬНЫЙ ЧАТ.",
+description:"Одно сообщество. Один чат. Люди со всего мира.",
+auth:"// СОЗДАТЬ АККАУНТ",
+username:"Никнейм",
+email:"Электронная почта",
+password:"Пароль",
+signup:"ЗАРЕГИСТРИРОВАТЬСЯ",
+login:"ВОЙТИ",
+hint:"Используй настоящий email. Проверь почту для подтверждения регистрации.",
+chat:"/// ГЛОБАЛЬНЫЙ ЧАТ",
+logout:"ВЫЙТИ",
+send:"ОТПРАВИТЬ",
+message:"Напиши сообщение...",
+footer:"DUDUMAINEIMISS © 2026 — НЕЗАВИСИМАЯ ЦИФРОВАЯ ЛАБОРАТОРИЯ",
+welcome:"Вы вошли как",
+created:"Аккаунт создан!",
+checkEmail:"Проверь почту и подтверди регистрацию. Затем войди.",
+sending:"Создаём аккаунт...",
+invalidNick:"Ник: 3–24 символа, только латиница, цифры и _",
+invalidPassword:"Введи email и пароль от 8 символов.",
+empty:"Введи email и пароль.",
+loggedOut:"Вы вышли из аккаунта.",
+greeting:"Будь вежливым. Не публикуй пароли и личные данные.",
+logging:"Входим...",
+loadError:"Не удалось загрузить сообщения: ",
+sendError:"Не удалось отправить: ",
+loading:"Загрузка сообщений...",
+noMessages:"Сообщений пока нет. Начни разговор!",
+fileTooBig:"Файл больше 25 МБ.",
+upload:"Загрузка файла...",
+uploadError:"Не удалось загрузить файл: ",
+sendFileError:"Не удалось сохранить сообщение с файлом: ",
+preview:"Просмотреть файл",
+download:"Скачать",
+file:"Файл",
+attached:"Вложение",
+uploadHint:"Добавляй фото, видео или документы. Максимальный размер: 25 МБ.",
+selectFirst:"Выбери файл или напиши сообщение.",
+open:"Открыть файл"
+}
 };
 
-let currentLanguage = localStorage.getItem("dudu_language") || "en";
-if(!translations[currentLanguage]) currentLanguage = "en";
+let currentLanguage =
+localStorage.getItem("dudu_language") || "en";
 
-let currentUser = null;
-let chatChannel = null;
-let loadingChat = false;
+if(!translations[currentLanguage]) currentLanguage="en";
+
+let currentUser=null;
+let chatChannel=null;
+let loadingChat=false;
+let selectedFile=null;
 
 function tr(key){
  return translations[currentLanguage][key] || key;
 }
 
 function status(text,error=false){
- $("status").textContent = text;
- $("status").style.color = error ? "#ff7777" : "#00ff88";
+ $("status").textContent=text;
+ $("status").style.color=error?"#ff7777":"#00ff88";
 }
 
 function setLanguage(lang){
- if(!translations[lang]) return;
- currentLanguage = lang;
+ if(!translations[lang])return;
+
+ currentLanguage=lang;
  localStorage.setItem("dudu_language",lang);
 
- const t = translations[lang];
- document.documentElement.lang = lang;
- $("language").value = lang;
- $("onlineText").textContent = t.online;
- $("tagline").textContent = t.tagline;
- $("mainTitle").innerHTML = t.title.replace("CHAT.","<span>CHAT.</span>").replace("ЧАТ.","<span>ЧАТ.</span>");
- $("description").textContent = t.description;
+ const t=translations[lang];
 
- $("authTitle").textContent = t.auth;
- $("usernameLabel").textContent = t.username;
- $("emailLabel").textContent = t.email;
- $("passwordLabel").textContent = t.password;
+ document.documentElement.lang=lang;
+ $("language").value=lang;
 
- $("username").placeholder = t.username;
- $("email").placeholder = t.email;
- $("password").placeholder = t.password;
+ $("onlineText").textContent=t.online;
+ $("tagline").textContent=t.tagline;
+ $("mainTitle").textContent=t.title;
 
- $("signup").textContent = t.signup;
- $("login").textContent = t.login;
- $("authHint").textContent = t.hint;
+ $("description").textContent=t.description;
+ $("authTitle").textContent=t.auth;
 
- $("chatTitle").textContent = t.chat;
- $("logout").textContent = t.logout;
- $("send").textContent = t.send;
- $("message").placeholder = t.message;
- $("chatHint").textContent = t.greeting;
- $("footer").textContent = t.footer;
+ $("usernameLabel").textContent=t.username;
+ $("emailLabel").textContent=t.email;
+ $("passwordLabel").textContent=t.password;
+
+ $("username").placeholder=t.username;
+ $("email").placeholder=t.email;
+ $("password").placeholder=t.password;
+
+ $("signup").textContent=t.signup;
+ $("login").textContent=t.login;
+ $("authHint").textContent=t.hint;
+
+ $("chatTitle").textContent=t.chat;
+ $("logout").textContent=t.logout;
+ $("send").textContent=t.send;
+ $("message").placeholder=t.message;
+ $("chatHint").textContent=t.greeting;
+ $("footer").textContent=t.footer;
+ $("uploadHint").textContent=t.uploadHint;
 
  if(currentUser){
-  const nick = $("welcome").dataset.nick || "user";
-  $("welcome").textContent = t.welcome + " @" + nick;
+  const nick=$("welcome").dataset.nick||"user";
+  $("welcome").textContent=t.welcome+" @"+nick;
  }
 }
 
-$("language").addEventListener("change",e=>setLanguage(e.target.value));
+$("language").addEventListener("change",e=>{
+ setLanguage(e.target.value);
+});
 
 function showAuth(){
- $("authPanel").style.display = "block";
- $("chatPanel").style.display = "none";
- $("usernameWrap").style.display = "block";
- $("authTitle").textContent = tr("auth");
+ $("authPanel").style.display="block";
+ $("chatPanel").style.display="none";
+ $("usernameWrap").style.display="block";
+ $("authTitle").textContent=tr("auth");
 }
 
 function showChat(){
- $("authPanel").style.display = "none";
- $("chatPanel").style.display = "block";
+ $("authPanel").style.display="none";
+ $("chatPanel").style.display="block";
 }
 
 function switchToLogin(){
- $("usernameWrap").style.display = "none";
- $("authTitle").textContent = tr("login");
+ $("usernameWrap").style.display="none";
+ $("authTitle").textContent=tr("login");
  status("");
 }
 
 $("login").addEventListener("click",switchToLogin);
 
 $("signup").addEventListener("click",async()=>{
- const username = $("username").value.trim();
- const email = $("email").value.trim();
- const password = $("password").value;
+ const username=$("username").value.trim();
+ const email=$("email").value.trim();
+ const password=$("password").value;
 
  if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))
   return status(tr("invalidNick"),true);
 
- if(!email || password.length < 8)
+ if(!email||password.length<8)
   return status(tr("invalidPassword"),true);
 
- $("signup").disabled = true;
+ $("signup").disabled=true;
  status(tr("sending"));
 
- const {data,error} = await db.auth.signUp({
-  email,password,
+ const {data,error}=await db.auth.signUp({
+  email,
+  password,
   options:{
    data:{username},
    emailRedirectTo:"https://dudumaineimiss.pages.dev"
   }
  });
 
- $("signup").disabled = false;
+ $("signup").disabled=false;
 
- if(error) return status(error.message,true);
+ if(error)return status(error.message,true);
 
  if(data.session){
   status(tr("created"));
  }else{
   status(tr("checkEmail"));
-  $("usernameWrap").style.display = "none";
-  $("authTitle").textContent = tr("login");
+  $("usernameWrap").style.display="none";
+  $("authTitle").textContent=tr("login");
  }
 });
 
 async function login(){
- const email = $("email").value.trim();
- const password = $("password").value;
+ const email=$("email").value.trim();
+ const password=$("password").value;
 
- if(!email || !password) return status(tr("empty"),true);
+ if(!email||!password)
+  return status(tr("empty"),true);
 
- $("login").disabled = true;
+ $("login").disabled=true;
  status(tr("logging"));
 
- const {error} = await db.auth.signInWithPassword({email,password});
+ const {error}=await db.auth.signInWithPassword({
+  email,password
+ });
 
- $("login").disabled = false;
+ $("login").disabled=false;
 
- if(error) status(error.message,true);
+ if(error)status(error.message,true);
+}
+
+$("login").addEventListener("click",login);
+
+function formatSize(bytes){
+ if(bytes<1024)return bytes+" B";
+ if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" KB";
+ return (bytes/1024/1024).toFixed(1)+" MB";
+}
+
+function showSelectedFile(file){
+ $("attachmentPreview").classList.add("show");
+ $("previewInfo").replaceChildren();
+
+ const strong=document.createElement("strong");
+ strong.textContent=tr("attached");
+
+ const name=document.createElement("div");
+ name.textContent=file.name+" · "+formatSize(file.size);
+
+ $("previewInfo").append(strong,name);
+}
+
+function clearSelectedFile(){
+ selectedFile=null;
+ $("fileInput").value="";
+ $("attachmentPreview").classList.remove("show");
+ $("previewInfo").replaceChildren();
+}
+
+function chooseFile(){
+ $("fileInput").click();
+}
+
+$("attachButton").addEventListener("click",chooseFile);
+$("paperclipButton").addEventListener("click",chooseFile);
+$("removeFile").addEventListener("click",clearSelectedFile);
+
+$("fileInput").addEventListener("change",()=>{
+ const file=$("fileInput").files[0];
+
+ if(!file)return;
+
+ if(file.size>MAX_FILE_SIZE){
+  alert(tr("fileTooBig"));
+  clearSelectedFile();
+  return;
+ }
+
+ selectedFile=file;
+ showSelectedFile(file);
+});
+
+async function getSignedFileUrl(path){
+ const {data,error}=await db.storage
+  .from(STORAGE_BUCKET)
+  .createSignedUrl(path,60*60);
+
+ if(error)throw error;
+
+ return data.signedUrl;
+}
+
+function addAttachment(container,row){
+ if(!row.file_path)return;
+
+ const card=document.createElement("div");
+ card.className="fileCard";
+
+ const title=document.createElement("div");
+ title.className="nick";
+ title.textContent=row.file_name||tr("file");
+
+ const meta=document.createElement("div");
+ meta.className="fileMeta";
+ meta.textContent=(row.file_type||"file")+" · "+formatSize(row.file_size||0);
+
+ const actions=document.createElement("div");
+ actions.className="fileActions";
+
+ const previewBtn=document.createElement("button");
+ previewBtn.className="secondary";
+ previewBtn.textContent=tr("preview");
+
+ const downloadBtn=document.createElement("button");
+ downloadBtn.className="secondary";
+ downloadBtn.textContent=tr("download");
+
+ card.append(title,meta);
+
+ const type=(row.file_type||"").toLowerCase();
+
+ const isImage=type.startsWith("image/");
+ const isVideo=type.startsWith("video/");
+ const isPdf=type==="application/pdf";
+
+ let media=null;
+
+ if(isImage){
+  media=document.createElement("img");
+  media.className="filePreview";
+  media.alt=row.file_name||"Image";
+ }
+
+ if(isVideo){
+  media=document.createElement("video");
+  media.className="filePreview";
+  media.controls=true;
+  media.preload="metadata";
+ }
+
+ if(isPdf){
+  media=document.createElement("iframe");
+  media.className="filePreview";
+  media.style.width="100%";
+  media.style.height="300px";
+  media.title=row.file_name||"PDF";
+ }
+
+ if(media)card.append(media);
+
+ actions.append(previewBtn,downloadBtn);
+ card.append(actions);
+ container.append(card);
+
+ let url=null;
+
+ async function resolveUrl(){
+  if(!url)url=await getSignedFileUrl(row.file_path);
+  return url;
+ }
+
+ previewBtn.addEventListener("click",async()=>{
+  try{
+   const signed=await resolveUrl();
+
+   if(media){
+    media.src=signed;
+    media.style.display="block";
+    previewBtn.textContent=tr("open");
+   }else{
+    window.open(signed,"_blank","noopener");
+   }
+  }catch(e){
+   alert(tr("loadError")+e.message);
+  }
+ });
+
+ downloadBtn.addEventListener("click",async()=>{
+  try{
+   const signed=await resolveUrl();
+
+   const a=document.createElement("a");
+   a.href=signed;
+   a.target="_blank";
+   a.rel="noopener";
+   a.download=row.file_name||"download";
+   a.click();
+  }catch(e){
+   alert(tr("loadError")+e.message);
+  }
+ });
 }
 
 function addMessage(row){
- const item = document.createElement("div");
- item.className = "msg";
+ const item=document.createElement("div");
+ item.className="msg";
 
- const header = document.createElement("div");
- const nick = document.createElement("span");
- nick.className = "nick";
- nick.textContent = row.profiles?.username || "User";
+ const header=document.createElement("div");
 
- const time = document.createElement("span");
- time.className = "time";
- time.textContent = new Date(row.created_at).toLocaleString();
+ const nick=document.createElement("span");
+ nick.className="nick";
+ nick.textContent=row.profiles?.username||"User";
 
- const content = document.createElement("div");
- content.className = "content";
- content.textContent = row.content;
+ const time=document.createElement("span");
+ time.className="time";
+ time.textContent=new Date(row.created_at).toLocaleString();
+
+ const content=document.createElement("div");
+ content.className="content";
+ content.textContent=row.content||"";
 
  header.append(nick,time);
- item.append(header,content);
+ item.append(header);
+
+ if(row.content)item.append(content);
+
+ addAttachment(item,row);
+
  $("messages").appendChild(item);
 }
 
 async function loadMessages(){
- const box = $("messages");
- box.textContent = tr("loading");
+ const box=$("messages");
+ box.textContent=tr("loading");
 
- const {data,error} = await db
+ const {data,error}=await db
   .from("messages")
-  .select("id,content,created_at,user_id,profiles(username)")
+  .select("id,content,created_at,user_id,file_path,file_name,file_type,file_size,profiles(username)")
   .order("created_at",{ascending:false})
   .limit(100);
 
  if(error){
-  box.textContent = tr("loadError") + error.message;
+  box.textContent=tr("loadError")+error.message;
   return;
  }
 
  box.replaceChildren();
 
  if(!data.length){
-  box.textContent = tr("noMessages");
+  box.textContent=tr("noMessages");
   return;
  }
 
  data.reverse().forEach(addMessage);
- box.scrollTop = box.scrollHeight;
+ box.scrollTop=box.scrollHeight;
 }
 
 async function sendMessage(){
- const content = $("message").value.trim();
- if(!content || !currentUser) return;
+ const content=$("message").value.trim();
+ const file=selectedFile;
 
- $("send").disabled = true;
+ if(!content&&!file)
+  return alert(tr("selectFirst"));
 
- const {error} = await db.from("messages").insert({
-  user_id:currentUser.id,
-  content
- });
+ if(!currentUser)return;
 
- $("send").disabled = false;
+ $("send").disabled=true;
+ $("paperclipButton").disabled=true;
+ $("attachButton").disabled=true;
 
- if(error){
-  alert(tr("sendError") + error.message);
-  return;
- }
+ let filePath=null;
+ let fileName=null;
+ let fileType=null;
+ let fileSize=null;
 
- $("message").value = "";
- await loadMessages();
-}
+ try{
+  if(file){
+   status(tr("upload"));
 
-async function enterChat(user){
- if(loadingChat) return;
- loadingChat = true;
- currentUser = user;
+   const safeName=file.name
+    .replace(/[^a-zA-Z0-9._-]/g,"_")
+    .slice(-100);
 
- const {data:profile} = await db
-  .from("profiles")
-  .select("username")
-  .eq("id",user.id)
-  .single();
-
- const nick = profile?.username || "user";
- $("welcome").dataset.nick = nick;
- $("welcome").textContent = tr("welcome") + " @" + nick;
-
- showChat();
- await loadMessages();
-
- if(chatChannel) await db.removeChannel(chatChannel);
-
- chatChannel = db.channel("global-chat")
-  .on("postgres_changes",{
-   event:"INSERT",
-   schema:"public",
-   table:"messages"
-  },()=>loadMessages())
-  .subscribe();
-
- loadingChat = false;
-}
-
-$("login").addEventListener("click",login);
-$("send").addEventListener("click",sendMessage);
-
-$("message").addEventListener("keydown",e=>{
- if(e.key === "Enter") sendMessage();
-});
-
-$("logout").addEventListener("click",async()=>{
- if(chatChannel) await db.removeChannel(chatChannel);
- chatChannel = null;
- await db.auth.signOut();
- currentUser = null;
- loadingChat = false;
- showAuth();
- status(tr("loggedOut"));
-});
-
-db.auth.onAuthStateChange((event,session)=>{
- if(session?.user){
-  setTimeout(()=>enterChat(session.user),0);
- }else{
-  currentUser = null;
-  showAuth();
- }
-});
-
-setLanguage(currentLanguage);
-
-(async()=>{
- const {data:{session}} = await db.auth.getSession();
- if(session?.user) await enterChat(session.user);
- else showAuth();
-})();
-</script>
-
-</body>
-</html>
+   filePath=currentUser.id+"
