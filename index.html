@@ -607,4 +607,173 @@ async function loadMessages(){
   .order("created_at",{ascending:false})
   .limit(100);
 
- if(error
+ ){
+  box.textContent=tr("loadError")+error.message;
+  return;
+ }
+
+ box.replaceChildren();
+
+ if(!data.length){
+  box.textContent=tr("noMessages");
+  return;
+ }
+
+ data.reverse().forEach(addMessage);
+ box.scrollTop=box.scrollHeight;
+}
+
+async function sendMessage(){
+ const content=$("message").value.trim();
+ const file=selectedFile;
+
+ if(!content&&!file){
+  alert(tr("selectFirst"));
+  return;
+ }
+
+ if(!currentUser)return;
+
+ $("send").disabled=true;
+ $("paperclipButton").disabled=true;
+ $("attachButton").disabled=true;
+
+ let filePath=null;
+
+ try{
+  let fileName=null;
+  let fileType=null;
+  let fileSize=null;
+
+  if(file){
+   status(tr("upload"));
+
+   const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_").slice(-100);
+   filePath=currentUser.id+"/"+crypto.randomUUID()+"-"+safeName;
+
+   const {error:uploadError}=await db.storage.from(STORAGE_BUCKET)
+    .upload(filePath,file,{
+     contentType:file.type||"application/octet-stream",
+     upsert:false
+    });
+
+   if(uploadError)throw new Error(tr("uploadError")+uploadError.message);
+
+   fileName=file.name;
+   fileType=file.type||"application/octet-stream";
+   fileSize=file.size;
+  }
+
+  const {error}=await db.from("messages").insert({
+   user_id:currentUser.id,
+   content:content||"",
+   file_path:filePath,
+   file_name:fileName,
+   file_type:fileType,
+   file_size:fileSize
+  });
+
+  if(error){
+   if(filePath)await db.storage.from(STORAGE_BUCKET).remove([filePath]);
+   throw new Error(tr("sendFileError")+error.message);
+  }
+
+  $("message").value="";
+  clearSelectedFile();
+  status("");
+  await loadMessages();
+
+ }catch(error){
+  alert(error.message);
+ }finally{
+  $("send").disabled=false;
+  $("paperclipButton").disabled=false;
+  $("attachButton").disabled=false;
+ }
+}
+
+async function enterChat(user){
+ if(loadingChat)return;
+ loadingChat=true;
+ currentUser=user;
+
+ try{
+  const {data:profile}=await db.from("profiles")
+   .select("username").eq("id",user.id).single();
+
+  const nick=profile?.username||user.user_metadata?.username||"user";
+  $("welcome").dataset.nick=nick;
+  $("welcome").textContent=tr("welcome")+" @"+nick;
+
+  showChat();
+  await loadMessages();
+
+  if(chatChannel)await db.removeChannel(chatChannel);
+
+  chatChannel=db.channel("global-chat")
+   .on("postgres_changes",{
+    event:"INSERT",schema:"public",table:"messages"
+   },()=>loadMessages())
+   .subscribe();
+
+ }catch(error){
+  $("messages").textContent=error.message;
+ }finally{
+  loadingChat=false;
+ }
+}
+
+$("send").addEventListener("click",sendMessage);
+
+$("message").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
+});
+
+$("logout").addEventListener("click",async()=>{
+ if(!db)return;
+
+ if(chatChannel)await db.removeChannel(chatChannel);
+ chatChannel=null;
+
+ await db.auth.signOut();
+ currentUser=null;
+ loadingChat=false;
+ clearSelectedFile();
+ showAuth();
+ status(tr("loggedOut"));
+});
+
+setLanguage(currentLanguage);
+showAuth();
+
+(async()=>{
+ try{
+  const supabaseLibrary=await loadSupabase();
+  db=supabaseLibrary.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+  db.auth.onAuthStateChange((event,session)=>{
+   if(session?.user){
+    setTimeout(()=>enterChat(session.user),0);
+   }else{
+    currentUser=null;
+    showAuth();
+   }
+  });
+
+  const {data:{session},error}=await db.auth.getSession();
+  if(error)throw error;
+
+  if(session?.user)await enterChat(session.user);
+
+ }catch(error){
+  status(tr("supabaseError")+" "+error.message,true);
+ }
+})();
+</script>
+
+</body>
+</html>
+ 
