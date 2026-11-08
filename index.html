@@ -32,7 +32,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 #chatPanel{display:none}
 .chathead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 #messages{height:390px;overflow-y:auto;padding:12px;background:#050907;border:1px solid #1b4931;border-radius:7px;margin:15px 0}
-.msg{padding:11px 4px;border-bottom:1px solid #14251b;overflow-wrap:anywhere}
+.msg{padding:11px 4px;border-bottom:1px solid #14251b;overflow-wrap:anywhere}.reactionBar{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.reactionBtn{background:#07140d;color:#b9d8c4;border:1px solid #28513a;padding:5px 9px;font-size:12px;border-radius:15px}.reactionBtn.active{border-color:#00ff88;color:#00ff88;background:#0b2416}
 .nick{color:#00ff88;font-weight:bold}
 .time{font-size:10px;color:#617268;margin-left:8px}
 .content{white-space:pre-wrap;line-height:1.6;margin-top:5px}
@@ -52,7 +52,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .fileActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .fileActions button{padding:8px 11px;font-size:11px}
 .uploadHint{font-size:11px;color:#829087;margin:8px 0 0;line-height:1.6}
-.adminPanel{display:none}.adminPanel.show{display:block}.adminUser{padding:12px 0;border-bottom:1px solid #1b4931;display:grid;gap:7px}.adminUser strong{color:#00ff88;overflow-wrap:anywhere}.adminUser input,.adminUser select{width:100%;padding:10px;background:#050907;color:#dce9e0;border:1px solid #28513a;border-radius:6px}.adminActions{display:flex;gap:8px;flex-wrap:wrap}.adminActions button{font-size:12px;padding:9px 12px}.adminNick{color:#ffd84d!important;text-shadow:0 0 10px #806400}.superBadge{display:inline-block;margin-left:7px;padding:2px 6px;border:1px solid #806400;border-radius:4px;color:#ffd84d;font-size:9px;letter-spacing:1px;vertical-align:middle}footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
+.adminPanel{display:none}.adminPanel.show{display:block}.adminUser{padding:12px 0;border-bottom:1px solid #1b4931;display:grid;gap:7px}.adminUser strong{color:#00ff88;overflow-wrap:anywhere}.adminUser input,.adminUser select{width:100%;padding:10px;background:#050907;color:#dce9e0;border:1px solid #28513a;border-radius:6px}.adminActions{display:flex;gap:8px;flex-wrap:wrap}.adminActions button{font-size:12px;padding:9px 12px}.adminNick{color:#ffd84d!important;text-shadow:0 0 10px #806400}.notifyBtn{font-size:11px;padding:9px 11px}.notifyStatus{font-size:10px;color:#829087;margin-top:6px}.profilePanel{display:none}.profilePanel.show{display:block}.profileRow{display:flex;gap:12px;align-items:center}.avatarPreview{width:58px;height:58px;border-radius:50%;border:1px solid #28513a;object-fit:cover;background:#07140d}.profilePanel textarea{width:100%;min-height:80px;padding:12px;background:#050907;color:white;border:1px solid #28513a;border-radius:6px;font:inherit}.profileMeta{font-size:11px;color:#829087}.superBadge{display:inline-block;margin-left:7px;padding:2px 6px;border:1px solid #806400;border-radius:4px;color:#ffd84d;font-size:9px;letter-spacing:1px;vertical-align:middle}footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
 @media(max-width:480px){
  main{margin-top:25px}
  .panel{padding:15px}
@@ -102,7 +102,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
     <h2 id="chatTitle" style="margin:0">/// GLOBAL CHAT</h2>
     <div class="note" id="welcome"></div>
    </div>
-   <div class="actions"><button class="secondary" id="adminOpen" type="button" style="display:none">ADMIN PANEL</button><button class="secondary" id="logout" type="button">LOG OUT</button></div>
+   <div class="actions"><button class="secondary notifyBtn" id="enableNotifications" type="button">ENABLE NOTIFICATIONS</button><button class="secondary" id="profileOpen" type="button">MY PROFILE</button><button class="secondary" id="adminOpen" type="button" style="display:none">ADMIN PANEL</button><button class="secondary" id="logout" type="button">LOG OUT</button></div>
   </div>
   <div id="messages" aria-live="polite"></div>
   <div id="attachmentPreview">
@@ -117,7 +117,16 @@ button:disabled{opacity:.5;cursor:not-allowed}
    <button id="send" type="button">SEND</button>
   </div>
   <p class="uploadHint" id="uploadHint">Attach images, videos or documents. Maximum file size: 25 MB.</p>
+  <p class="notifyStatus" id="notifyStatus">Notifications are off.</p>
   <p class="note" id="chatHint">Be respectful. Do not share passwords or personal information.</p>
+ </section>
+ <section class="panel profilePanel" id="profilePanel">
+  <div class="chathead"><h2>// MY PROFILE</h2><button class="secondary" id="profileClose" type="button">CLOSE</button></div>
+  <div class="profileRow"><img class="avatarPreview" id="avatarPreview" alt="Avatar" src=""><div class="profileMeta" id="profileIdentity"></div></div>
+  <label for="profileAvatar">Avatar image URL (optional)</label><input id="profileAvatar" maxlength="500" placeholder="https://...">
+  <label for="profileBio">About me</label><textarea id="profileBio" maxlength="160" placeholder="A little about you..."></textarea>
+  <label for="profileStatus">Status</label><input id="profileStatus" maxlength="60" placeholder="Online / Busy / Away...">
+  <div class="actions"><button id="saveProfile" type="button">SAVE PROFILE</button></div><div class="note" id="profileStatusText"></div>
  </section>
  <section class="panel adminPanel" id="adminPanel"><div class="chathead"><h2>// ADMIN PANEL</h2><button class="secondary" id="closeAdmin" type="button">CLOSE</button></div><p class="note">Superadmin access</p><div id="adminUsers">Loading users...</div></section>
 </main>
@@ -142,6 +151,9 @@ let currentLanguage = "en";
 let authMode = "signup";
 let refreshTimer = null;
 let sending = false;
+let notificationBaselineReady = false;
+let knownMessageIds = new Set();
+let notificationUsername = "";
 
 const translations = {
  en:{
@@ -511,6 +523,95 @@ async function openAdminPanel(){
 $("adminOpen").addEventListener("click",openAdminPanel);
 $("closeAdmin").addEventListener("click",()=>$("adminPanel").classList.remove("show"));
 
+async function openProfile(){
+ if(!currentUser) return;
+ $("profilePanel").classList.add("show");
+ $("profileIdentity").textContent="@"+getNick();
+ $("profileStatusText").textContent="Loading profile...";
+ const {data,error}=await db.from("profiles").select("bio,avatar_url,status").eq("id",currentUser.id).maybeSingle();
+ if(error){$("profileStatusText").textContent="Profile fields need SQL setup: "+error.message;return;}
+ $("profileBio").value=data?.bio||"";
+ $("profileAvatar").value=data?.avatar_url||"";
+ $("profileStatus").value=data?.status||"";
+ updateAvatarPreview();
+ $("profileStatusText").textContent="Your profile";
+}
+function updateAvatarPreview(){
+ const url=$("profileAvatar").value.trim();
+ $("avatarPreview").src=url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307140d'/%3E%3Ctext x='32' y='42' font-size='34' text-anchor='middle' fill='%2300ff88'%3E%E2%97%8F%3C/text%3E%3C/svg%3E";
+}
+async function saveProfile(){
+ const bio=$("profileBio").value.trim(), avatar_url=$("profileAvatar").value.trim(), profileStatus=$("profileStatus").value.trim();
+ if(avatar_url && !/^https:\/\//i.test(avatar_url)){ $("profileStatusText").textContent="Avatar URL must start with https://"; return; }
+ const {error}=await db.from("profiles").upsert({id:currentUser.id,bio,avatar_url,status:profileStatus},{onConflict:"id"});
+ $("profileStatusText").textContent=error?"Could not save: "+error.message:"Profile saved!";
+ updateAvatarPreview();
+}
+$("profileOpen").addEventListener("click",openProfile);
+$("profileClose").addEventListener("click",()=>$("profilePanel").classList.remove("show"));
+$("profileAvatar").addEventListener("input",updateAvatarPreview);
+$("saveProfile").addEventListener("click",saveProfile);
+
+function updateNotificationButton(){
+ const button = $("enableNotifications");
+ const label = $("notifyStatus");
+ if(!("Notification" in window)){
+  button.disabled = true;
+  button.textContent = "NOTIFICATIONS UNSUPPORTED";
+  label.textContent = "This browser does not support notifications.";
+  return;
+ }
+ if(Notification.permission === "granted"){
+  button.textContent = "NOTIFICATIONS ON";
+  label.textContent = "Browser notifications are enabled on this device.";
+ }else if(Notification.permission === "denied"){
+  button.textContent = "NOTIFICATIONS BLOCKED";
+  label.textContent = "Allow notifications for this site in browser settings.";
+ }else{
+  button.textContent = "ENABLE NOTIFICATIONS";
+  label.textContent = "Tap to allow alerts for new messages and @mentions.";
+ }
+}
+
+async function enableNotifications(){
+ if(!("Notification" in window)){
+  updateNotificationButton();
+  return;
+ }
+ try{
+  const permission = await Notification.requestPermission();
+  updateNotificationButton();
+  if(permission === "granted"){
+   new Notification("DUDUMAINEIMISS",{body:"Notifications enabled on this device."});
+  }
+ }catch(error){
+  $("notifyStatus").textContent = "Could not enable notifications: " + error.message;
+ }
+}
+
+function notifyNewMessage(row){
+ if(!currentUser || row.user_id === currentUser.id) return;
+ if(!("Notification" in window) || Notification.permission !== "granted") return;
+ const body = String(row.content || row.file_name || "New attachment").slice(0,140);
+ const username = notificationUsername || "Someone";
+ const isMention = body.toLowerCase().includes("@" + username.toLowerCase());
+ if(document.visibilityState === "visible" && !isMention) return;
+ const notification = new Notification(isMention ? "You were mentioned" : "New message · DUDUMAINEIMISS",{
+  body: body,
+  tag: "dudu-message-" + row.id,
+  silent: false
+ });
+ notification.onclick = ()=>{
+  window.focus();
+  notification.close();
+ };
+}
+
+$("enableNotifications").addEventListener("click",enableNotifications);
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState === "visible") updateNotificationButton();
+});
+
 async function loadMessages(){
  if(!db || !currentUser) return;
  const box = $("messages");
@@ -518,7 +619,7 @@ async function loadMessages(){
  const wasAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
  try{
   let result = await db.from("messages")
-   .select("id,content,created_at,user_id,file_path,file_name,file_type,file_size,profiles(username,role)")
+   .select("id,content,created_at,user_id,file_path,file_name,file_type,file_size,profiles(username,role,bio,avatar_url,status)")
    .order("created_at",{ascending:true}).limit(100);
   if(result.error){
    result = await db.from("messages")
@@ -526,6 +627,23 @@ async function loadMessages(){
     .order("created_at",{ascending:true}).limit(100);
   }
   if(result.error) throw result.error;
+  const rows = result.data || [];
+  let reactionRows=[];
+  if(rows.length){
+   const rr=await db.from("message_reactions").select("message_id,user_id,emoji").in("message_id",rows.map(r=>String(r.id)));
+   if(!rr.error) reactionRows=rr.data||[];
+  }
+  if(!notificationBaselineReady){
+   rows.forEach(row=>knownMessageIds.add(String(row.id)));
+   notificationBaselineReady = true;
+  }else{
+   rows.forEach(row=>{
+    const id = String(row.id);
+    if(!knownMessageIds.has(id)) notifyNewMessage(row);
+   });
+   rows.forEach(row=>knownMessageIds.add(String(row.id)));
+   if(knownMessageIds.size > 300) knownMessageIds = new Set(rows.map(row=>String(row.id)));
+  }
   box.replaceChildren();
   if(!result.data || result.data.length === 0){
    box.textContent = tr("noMessages");
@@ -537,6 +655,12 @@ async function loadMessages(){
    const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
    const isSuperadmin = row.user_id === "ab25b074-be0c-4ee1-aaef-bba7b91e3cdb";
    const nickname = isSuperadmin ? "ADMIN_deks" : (profile?.username || (row.user_id === currentUser.id ? getNick() : "User"));
+   const avatarUrl = profile?.avatar_url || "";
+   if(avatarUrl){
+    const avatar=document.createElement("img");avatar.src=avatarUrl;avatar.alt="";avatar.loading="lazy";
+    avatar.style.cssText="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:7px;border:1px solid #28513a";
+    item.append(avatar);
+   }
    const name = document.createElement("span");
    name.className = isSuperadmin ? "nick adminNick" : "nick";
    name.textContent = nickname;
@@ -553,14 +677,43 @@ async function loadMessages(){
    content.className = "content";
    content.textContent = row.content || "";
    item.append(name,time);
+   if(profile?.status){const st=document.createElement("div");st.className="profileMeta";st.textContent=profile.status;item.append(st);}
+   if(profile?.bio){const bio=document.createElement("div");bio.className="profileMeta";bio.textContent=profile.bio;item.append(bio);}
    if(row.content) item.append(content);
    addAttachment(item,row);
+   const mine=new Set(reactionRows.filter(r=>r.user_id===currentUser.id && String(r.message_id)===String(row.id)).map(r=>r.emoji));
+   const counts={};
+   reactionRows.filter(r=>String(r.message_id)===String(row.id)).forEach(r=>counts[r.emoji]=(counts[r.emoji]||0)+1);
+   const bar=document.createElement("div");bar.className="reactionBar";
+   ["👍","❤️","😂","🔥"].forEach(emoji=>{
+    const b=document.createElement("button");b.type="button";b.className="reactionBtn"+(mine.has(emoji)?" active":"");
+    b.textContent=emoji+" "+(counts[emoji]||0);b.addEventListener("click",()=>toggleReaction(row.id,emoji,mine.has(emoji)));bar.append(b);
+   });
+   item.append(bar);
    box.append(item);
   });
   if(wasAtBottom) box.scrollTop = box.scrollHeight;
   else box.scrollTop = oldScroll;
  }catch(error){
   box.textContent = tr("loadError") + error.message;
+ }
+}
+
+async function toggleReaction(messageId,emoji,alreadyReacted){
+ try{
+  if(alreadyReacted){
+   const {error}=await db.from("message_reactions").delete()
+    .eq("message_id",String(messageId)).eq("user_id",currentUser.id).eq("emoji",emoji);
+   if(error) throw error;
+  }else{
+   const {error}=await db.from("message_reactions").insert({
+    message_id:String(messageId),user_id:currentUser.id,emoji
+   });
+   if(error) throw error;
+  }
+  await loadMessages();
+ }catch(error){
+  alert("Не вдалося поставити реакцію. Перевір, чи виконаний SQL для реакцій: "+error.message);
  }
 }
 
@@ -619,6 +772,10 @@ $("logout").addEventListener("click",async()=>{
 async function handleSession(session){
  currentUser = session?.user || null;
  if(currentUser){
+  notificationUsername = getNick();
+  notificationBaselineReady = false;
+  knownMessageIds = new Set();
+  updateNotificationButton();
   authMode = "login";
   $("authPanel").style.display = "none";
   $("chatPanel").style.display = "block";
@@ -634,9 +791,12 @@ async function handleSession(session){
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(loadMessages,7000);
  }else{
+  notificationBaselineReady = false;
+  knownMessageIds = new Set();
   currentRole = "user";
   $("adminOpen").style.display = "none";
   $("adminPanel").classList.remove("show");
+  $("profilePanel").classList.remove("show");
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer = null;
   showAuth();
