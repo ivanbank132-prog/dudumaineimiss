@@ -52,7 +52,9 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .fileActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .fileActions button{padding:8px 11px;font-size:11px}
 .uploadHint{font-size:11px;color:#829087;margin:8px 0 0;line-height:1.6}
-.adminPanel{display:none}.adminPanel.show{display:block}.adminUser{padding:12px 0;border-bottom:1px solid #1b4931;display:grid;gap:7px}.adminUser strong{color:#00ff88;overflow-wrap:anywhere}.adminUser input,.adminUser select{width:100%;padding:10px;background:#050907;color:#dce9e0;border:1px solid #28513a;border-radius:6px}.adminActions{display:flex;gap:8px;flex-wrap:wrap}.adminActions button{font-size:12px;padding:9px 12px}.adminNick{color:#ffd84d!important;text-shadow:0 0 10px #806400}.notifyBtn{font-size:11px;padding:9px 11px}.notifyStatus{font-size:10px;color:#829087;margin-top:6px}.profilePanel{display:none}.profilePanel.show{display:block}.profileRow{display:flex;gap:12px;align-items:center}.avatarPreview{width:58px;height:58px;border-radius:50%;border:1px solid #28513a;object-fit:cover;background:#07140d}.profilePanel textarea{width:100%;min-height:80px;padding:12px;background:#050907;color:white;border:1px solid #28513a;border-radius:6px;font:inherit}.profileMeta{font-size:11px;color:#829087}.superBadge{display:inline-block;margin-left:7px;padding:2px 6px;border:1px solid #806400;border-radius:4px;color:#ffd84d;font-size:9px;letter-spacing:1px;vertical-align:middle}footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
+.adminPanel{display:none}.adminPanel.show{display:block}.adminUser{padding:12px 0;border-bottom:1px solid #1b4931;display:grid;gap:7px}.adminUser strong{color:#00ff88;overflow-wrap:anywhere}.adminUser input,.adminUser select{width:100%;padding:10px;background:#050907;color:#dce9e0;border:1px solid #28513a;border-radius:6px}.adminActions{display:flex;gap:8px;flex-wrap:wrap}.adminActions button{font-size:12px;padding:9px 12px}.adminNick{color:#ffd84d!important;text-shadow:0 0 10px #806400}.notifyBtn{font-size:11px;padding:9px 11px}.notifyStatus{font-size:10px;color:#829087;margin-top:6px}.profilePanel{display:none}.profilePanel.show{display:block}.profileRow{display:flex;gap:12px;align-items:center}.avatarPreview{width:58px;height:58px;border-radius:50%;border:1px solid #28513a;object-fit:cover;background:#07140d}.profilePanel textarea{width:100%;min-height:80px;padding:12px;background:#050907;color:white;border:1px solid #28513a;border-radius:6px;font:inherit}.profileMeta{font-size:11px;color:#829087}.superBadge{display:inline-block;margin-left:7px;padding:2px 6px;border:1px solid #806400;border-radius:4px;color:#ffd84d;font-size:9px;letter-spacing:1px;vertical-align:middle}
+.bottomNav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:100;background:#050807;border-top:1px solid #17432d;padding:8px 12px calc(8px + env(safe-area-inset-bottom));grid-template-columns:1fr 1fr;gap:10px}.bottomNav button{background:transparent;color:#829087;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;padding:7px}.bottomNav button.active{color:#00ff88}.bottomNav .navIcon{font-size:21px}.pageView{display:none}.pageView.active{display:block}.clickProfile{display:inline-flex;align-items:center;gap:7px;background:none;border:0;color:inherit;padding:0;font:inherit;text-align:left}.msgAvatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid #28513a;background:#07140d}.msgHeader{display:flex;align-items:center;gap:8px}.videoGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:14px}.videoTile{position:relative;aspect-ratio:9/14;background:#07140d;border:1px solid #28513a;border-radius:7px;overflow:hidden;padding:0}.videoTile video{width:100%;height:100%;object-fit:cover}.videoTile .vCount{position:absolute;bottom:5px;left:5px;background:#000a;color:white;padding:3px 5px;font-size:10px}.videoPlayer{width:100%;max-height:65vh;background:#000;border-radius:8px}.statRow{display:flex;justify-content:space-around;gap:8px;text-align:center;padding:12px 0;color:#829087}.statRow strong{display:block;color:#00ff88;font-size:18px}.profileTop{display:flex;align-items:center;gap:13px;margin:12px 0}.profileBigAvatar{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid #00ff88;background:#07140d}.videoActions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.commentItem{padding:8px 0;border-bottom:1px solid #14251b;font-size:13px}body{padding-bottom:78px}
+footer{text-align:center;color:#53665a;padding:35px 10px;font-size:11px}
 @media(max-width:480px){
  main{margin-top:25px}
  .panel{padding:15px}
@@ -120,16 +122,28 @@ button:disabled{opacity:.5;cursor:not-allowed}
   <p class="notifyStatus" id="notifyStatus">Notifications are off.</p>
   <p class="note" id="chatHint">Be respectful. Do not share passwords or personal information.</p>
  </section>
+ <section class="panel pageView" id="profilePage">
+  <div class="chathead"><h2>// PROFILE</h2><button class="secondary" id="editProfileBtn" type="button">EDIT PROFILE</button></div>
+  <div class="profileTop"><img class="profileBigAvatar" id="pageAvatar" alt="Avatar"><div><div class="nick" id="pageNick">@user</div><div class="profileMeta" id="pageStatus"></div></div></div>
+  <div class="profileMeta" id="pageBio"></div>
+  <div class="statRow"><div><strong id="videoCount">0</strong>Videos</div><div><strong id="totalViews">0</strong>Views</div><div><strong id="totalLikes">0</strong>Likes</div></div>
+  <div class="chathead"><h2>// MY VIDEOS</h2><button id="uploadVideoBtn" type="button">＋ VIDEO</button></div>
+  <input id="videoInput" type="file" accept="video/*" style="display:none">
+  <div class="note" id="videoStatus">Upload videos to your profile.</div><div class="videoGrid" id="myVideoGrid"></div>
+ </section>
  <section class="panel profilePanel" id="profilePanel">
-  <div class="chathead"><h2>// MY PROFILE</h2><button class="secondary" id="profileClose" type="button">CLOSE</button></div>
+  <div class="chathead"><h2>// EDIT PROFILE</h2><button class="secondary" id="profileClose" type="button">CLOSE</button></div>
   <div class="profileRow"><img class="avatarPreview" id="avatarPreview" alt="Avatar" src=""><div class="profileMeta" id="profileIdentity"></div></div>
   <label for="profileAvatar">Avatar image URL (optional)</label><input id="profileAvatar" maxlength="500" placeholder="https://...">
   <label for="profileBio">About me</label><textarea id="profileBio" maxlength="160" placeholder="A little about you..."></textarea>
   <label for="profileStatus">Status</label><input id="profileStatus" maxlength="60" placeholder="Online / Busy / Away...">
   <div class="actions"><button id="saveProfile" type="button">SAVE PROFILE</button></div><div class="note" id="profileStatusText"></div>
  </section>
+ <section class="panel" id="publicProfilePanel" style="display:none"><div class="chathead"><h2>// USER PROFILE</h2><button class="secondary" id="closePublicProfile" type="button">BACK</button></div><div class="profileTop"><img class="profileBigAvatar" id="publicAvatar" alt="Avatar"><div><div class="nick" id="publicNick"></div><div class="profileMeta" id="publicStatus"></div></div></div><div class="profileMeta" id="publicBio"></div><div class="videoGrid" id="publicVideoGrid"></div></section>
+ <section class="panel" id="videoDetailPanel" style="display:none"><div class="chathead"><h2>// VIDEO</h2><button class="secondary" id="closeVideoDetail" type="button">BACK</button></div><video id="detailVideo" class="videoPlayer" controls playsinline></video><div class="videoActions"><button id="videoLikeBtn" class="secondary" type="button">♡ LIKE</button><span class="profileMeta" id="videoStats"></span></div><div id="videoComments"></div><input id="videoCommentInput" maxlength="500" placeholder="Write a comment..."><button id="sendVideoComment" type="button">COMMENT</button></section>
  <section class="panel adminPanel" id="adminPanel"><div class="chathead"><h2>// ADMIN PANEL</h2><button class="secondary" id="closeAdmin" type="button">CLOSE</button></div><p class="note">Superadmin access</p><div id="adminUsers">Loading users...</div></section>
 </main>
+<nav class="bottomNav" id="bottomNav"><button id="navHome" class="active" type="button"><span class="navIcon">⌂</span>ГЛАВНАЯ</button><button id="navProfile" type="button"><span class="navIcon">♙</span>ПРОФИЛЬ</button></nav>
 <footer id="footer">DUDUMAINEIMISS © 2026 — INDEPENDENT DIGITAL LABORATORY</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -543,11 +557,11 @@ function updateAvatarPreview(){
 async function saveProfile(){
  const bio=$("profileBio").value.trim(), avatar_url=$("profileAvatar").value.trim(), profileStatus=$("profileStatus").value.trim();
  if(avatar_url && !/^https:\/\//i.test(avatar_url)){ $("profileStatusText").textContent="Avatar URL must start with https://"; return; }
- const {error}=await db.from("profiles").upsert({id:currentUser.id,bio,avatar_url,status:profileStatus},{onConflict:"id"});
+ const {error}=await db.from("profiles").update({bio,avatar_url,status:profileStatus}).eq("id",currentUser.id);
  $("profileStatusText").textContent=error?"Could not save: "+error.message:"Profile saved!";
  updateAvatarPreview();
 }
-$("profileOpen").addEventListener("click",openProfile);
+
 $("profileClose").addEventListener("click",()=>$("profilePanel").classList.remove("show"));
 $("profileAvatar").addEventListener("input",updateAvatarPreview);
 $("saveProfile").addEventListener("click",saveProfile);
@@ -656,27 +670,15 @@ async function loadMessages(){
    const isSuperadmin = row.user_id === "ab25b074-be0c-4ee1-aaef-bba7b91e3cdb";
    const nickname = isSuperadmin ? "ADMIN_deks" : (profile?.username || (row.user_id === currentUser.id ? getNick() : "User"));
    const avatarUrl = profile?.avatar_url || "";
-   if(avatarUrl){
-    const avatar=document.createElement("img");avatar.src=avatarUrl;avatar.alt="";avatar.loading="lazy";
-    avatar.style.cssText="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:7px;border:1px solid #28513a";
-    item.append(avatar);
-   }
-   const name = document.createElement("span");
-   name.className = isSuperadmin ? "nick adminNick" : "nick";
-   name.textContent = nickname;
-   if(isSuperadmin){
-    const badge = document.createElement("span");
-    badge.className = "superBadge";
-    badge.textContent = "SUPERADMIN";
-    name.append(badge);
-   }
-   const time = document.createElement("span");
-   time.className = "time";
-   time.textContent = new Date(row.created_at).toLocaleString();
-   const content = document.createElement("div");
-   content.className = "content";
-   content.textContent = row.content || "";
-   item.append(name,time);
+   const head=document.createElement("div");head.className="msgHeader";
+   const profileLink=document.createElement("button");profileLink.type="button";profileLink.className="clickProfile";
+   const avatar=document.createElement("img");avatar.className="msgAvatar";avatar.src=avatarUrl||AVATAR_FALLBACK;avatar.alt="";avatar.loading="lazy";
+   const name=document.createElement("span");name.className=isSuperadmin?"nick adminNick":"nick";name.textContent=nickname;
+   if(isSuperadmin){const badge=document.createElement("span");badge.className="superBadge";badge.textContent="SUPERADMIN";name.append(badge);}
+   profileLink.append(avatar,name);profileLink.addEventListener("click",()=>openPublicProfile(row.user_id));
+   const time=document.createElement("span");time.className="time";time.textContent=new Date(row.created_at).toLocaleString();
+   const content=document.createElement("div");content.className="content";content.textContent=row.content||"";
+   head.append(profileLink,time);item.append(head);
    if(profile?.status){const st=document.createElement("div");st.className="profileMeta";st.textContent=profile.status;item.append(st);}
    if(profile?.bio){const bio=document.createElement("div");bio.className="profileMeta";bio.textContent=profile.bio;item.append(bio);}
    if(row.content) item.append(content);
@@ -769,9 +771,27 @@ $("logout").addEventListener("click",async()=>{
  if(db) await db.auth.signOut();
 });
 
+
+const AVATAR_FALLBACK="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2307140d'/%3E%3Ctext x='32' y='43' font-size='38' text-anchor='middle' fill='%2300ff88'%3E%E2%97%8F%3C/text%3E%3C/svg%3E";
+let activeVideo=null;
+function setMainTab(tab){const home=tab==='home';$('chatPanel').style.display=home?'block':'none';$('profilePage').classList.toggle('active',!home);$('publicProfilePanel').style.display='none';$('videoDetailPanel').style.display='none';$('profilePanel').classList.remove('show');$('adminPanel').classList.remove('show');$('navHome').classList.toggle('active',home);$('navProfile').classList.toggle('active',!home);if(!home)loadOwnProfilePage();}
+$('navHome').addEventListener('click',()=>setMainTab('home'));$('navProfile').addEventListener('click',()=>setMainTab('profile'));$('profileOpen').addEventListener('click',()=>setMainTab('profile'));$('editProfileBtn').addEventListener('click',openProfile);
+$('closePublicProfile').addEventListener('click',()=>{ $('publicProfilePanel').style.display='none';setMainTab('home');});$('closeVideoDetail').addEventListener('click',()=>{ $('videoDetailPanel').style.display='none';setMainTab('profile');});
+function renderProfile(data,nick,which){const a=$(which==='own'?'pageAvatar':'publicAvatar');a.src=data?.avatar_url||AVATAR_FALLBACK;$(which==='own'?'pageNick':'publicNick').textContent='@'+nick;$(which==='own'?'pageBio':'publicBio').textContent=data?.bio||'No bio yet.';$(which==='own'?'pageStatus':'publicStatus').textContent=data?.status||'';}
+async function loadOwnProfilePage(){if(!currentUser)return;const {data,error}=await db.from('profiles').select('username,bio,avatar_url,status').eq('id',currentUser.id).maybeSingle();if(error){$('videoStatus').textContent='Profile SQL setup required: '+error.message;return;}renderProfile(data,getNick(),'own');await loadVideos(currentUser.id,'myVideoGrid');}
+async function openPublicProfile(userId){$('chatPanel').style.display='none';$('profilePage').classList.remove('active');$('profilePanel').classList.remove('show');$('publicProfilePanel').style.display='block';$('videoDetailPanel').style.display='none';const {data,error}=await db.from('profiles').select('username,bio,avatar_url,status').eq('id',userId).maybeSingle();if(error){$('publicBio').textContent=error.message;return;}renderProfile(data,data?.username||(userId===currentUser.id?getNick():'user'),'public');await loadVideos(userId,'publicVideoGrid');}
+async function loadVideos(userId,targetId){const grid=$(targetId);grid.replaceChildren();const {data,error}=await db.from('videos').select('id,user_id,storage_path,caption,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(60);if(error){if(targetId==='myVideoGrid')$('videoStatus').textContent='Videos need SQL setup: '+error.message;else grid.textContent='No videos yet.';return;}let views=0,likes=0;for(const v of data||[]){const {data:stats}=await db.rpc('video_public_stats',{p_video_id:v.id});views+=Number(stats?.views||0);likes+=Number(stats?.likes||0);const tile=document.createElement('button');tile.className='videoTile';tile.type='button';const vid=document.createElement('video');vid.muted=true;vid.playsInline=true;vid.preload='metadata';const {data:url}=await db.storage.from('user-videos').createSignedUrl(v.storage_path,3600);if(url?.signedUrl)vid.src=url.signedUrl;const count=document.createElement('span');count.className='vCount';count.textContent='▶ '+Number(stats?.views||0);tile.append(vid,count);tile.addEventListener('click',()=>openVideo(v,url?.signedUrl));grid.append(tile);}if(targetId==='myVideoGrid'){$('videoCount').textContent=(data||[]).length;$('totalViews').textContent=views;$('totalLikes').textContent=likes;}if(!(data||[]).length)grid.textContent='No videos yet.';}
+async function openVideo(video,url){if(!url){alert('Could not open video. Check SQL and user-videos storage.');return;}activeVideo=video;$('chatPanel').style.display='none';$('profilePage').classList.remove('active');$('publicProfilePanel').style.display='none';$('videoDetailPanel').style.display='block';$('detailVideo').src=url;const key='dudu_view_'+video.id;if(!localStorage.getItem(key)){const v=await db.from('video_views').insert({video_id:video.id,user_id:currentUser.id});if(!v.error)localStorage.setItem(key,'1');}await refreshVideoDetails();}
+async function refreshVideoDetails(){if(!activeVideo)return;const {data:stats}=await db.rpc('video_public_stats',{p_video_id:activeVideo.id});$('videoStats').textContent=(stats?.views||0)+' views · '+(stats?.likes||0)+' likes';const {data:mine}=await db.from('video_likes').select('video_id').eq('video_id',activeVideo.id).eq('user_id',currentUser.id).maybeSingle();$('videoLikeBtn').textContent=mine?'❤️ LIKED':'♡ LIKE';const {data:comments,error}=await db.from('video_comments').select('id,user_id,content,created_at').eq('video_id',activeVideo.id).order('created_at',{ascending:true}).limit(100);const box=$('videoComments');box.replaceChildren();if(error){box.textContent='Comments need SQL setup.';return;}const ids=[...new Set((comments||[]).map(c=>c.user_id))];let names={};if(ids.length){const pr=await db.from('profiles').select('id,username').in('id',ids);(pr.data||[]).forEach(x=>names[x.id]=x.username);} (comments||[]).forEach(c=>{const el=document.createElement('div');el.className='commentItem';el.textContent='@'+(names[c.user_id]||'user')+': '+c.content;box.append(el);});}
+$('videoLikeBtn').addEventListener('click',async()=>{if(!activeVideo)return;const {data:mine}=await db.from('video_likes').select('video_id').eq('video_id',activeVideo.id).eq('user_id',currentUser.id).maybeSingle();const r=mine?await db.from('video_likes').delete().eq('video_id',activeVideo.id).eq('user_id',currentUser.id):await db.from('video_likes').insert({video_id:activeVideo.id,user_id:currentUser.id});if(r.error)alert(r.error.message);else refreshVideoDetails();});
+$('sendVideoComment').addEventListener('click',async()=>{const content=$('videoCommentInput').value.trim();if(!content||!activeVideo)return;const {error}=await db.from('video_comments').insert({video_id:activeVideo.id,user_id:currentUser.id,content});if(error)alert(error.message);else{$('videoCommentInput').value='';refreshVideoDetails();}});
+$('uploadVideoBtn').addEventListener('click',()=>$('videoInput').click());$('videoInput').addEventListener('change',async()=>{const file=$('videoInput').files[0];if(!file)return;if(!file.type.startsWith('video/')){alert('Choose a video file.');return;}if(file.size>100*1024*1024){alert('Maximum video size is 100 MB.');return;}$('videoStatus').textContent='Uploading video...';const path=currentUser.id+'/'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const up=await db.storage.from('user-videos').upload(path,file,{upsert:false});if(up.error){$('videoStatus').textContent='Upload failed: '+up.error.message;return;}const ins=await db.from('videos').insert({user_id:currentUser.id,storage_path:path,caption:''});if(ins.error){$('videoStatus').textContent='Video record failed: '+ins.error.message;return;}$('videoStatus').textContent='Video published!';$('videoInput').value='';loadVideos(currentUser.id,'myVideoGrid');});
+
 async function handleSession(session){
  currentUser = session?.user || null;
  if(currentUser){
+  $("bottomNav").style.display="grid";
+  setMainTab("home");
   notificationUsername = getNick();
   notificationBaselineReady = false;
   knownMessageIds = new Set();
@@ -793,6 +813,7 @@ async function handleSession(session){
  }else{
   notificationBaselineReady = false;
   knownMessageIds = new Set();
+  $("bottomNav").style.display="none";
   currentRole = "user";
   $("adminOpen").style.display = "none";
   $("adminPanel").classList.remove("show");
